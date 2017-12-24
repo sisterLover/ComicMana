@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/path_selector_item_background">
+
+    <TextView
+        android:id="@+id/current_path_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPathSelectorText"
+        android:text="Path:"
+        android:textSize="18sp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0pt"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/list_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/accept_button"
+            android:layout_width="0pt"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/path_selector_item_background"
+            android:textColor="@color/colorPathSelectorText"
+            android:text="Accept" />
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="0pt"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/path_selector_item_background"
+            android:textColor="@color/colorPathSelectorText"
+            android:text="Cancel" />
+    </LinearLayout>
+
+</LinearLayout>
