@@ -40,17 +40,13 @@ public class PathSelector {
 
         LayoutInflater inflater = LayoutInflater.from(context);
         mainLayout = inflater.inflate(R.layout.path_selector_layout, null);
-        //mainLayout.setBackgroundColor(context.getColor(R.color.colorPathSelectorBackground));
 
         listLayout = mainLayout.findViewById(R.id.list_layout);
         titleText = mainLayout.findViewById(R.id.current_path_text);
-        //titleText.setTextColor(context.getColor(R.color.colorPathSelectorText));
 
         accept = mainLayout.findViewById(R.id.accept_button);
-        //accept.setTextColor(context.getColor(R.color.colorPathSelectorText));
 
         cancel = mainLayout.findViewById(R.id.cancel_button);
-        //cancel.setTextColor(context.getColor(R.color.colorPathSelectorText));
 
         items = new ArrayList<>();
         itemClickListener = new ItemClickListener();

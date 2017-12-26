@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/img_viewer_base">
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignLeft="@id/img_viewer_base"
+        android:layout_alignTop="@id/img_viewer_base">
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/img_viewer_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </HorizontalScrollView>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/img_viewer_tooltip_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignLeft="@id/img_viewer_base"
+        android:layout_alignTop="@id/img_viewer_base"
+        android:background="@drawable/img_viewer_tooltip_background"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="0pt"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Button"
+            android:textColor="@color/colorImgViewerTooltipText"
+            android:background="@drawable/img_viewer_tooltip_background" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="0pt"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Button"
+            android:textColor="@color/colorImgViewerTooltipText"
+            android:background="@drawable/img_viewer_tooltip_background" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/img_viewer_tooltip_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignLeft="@id/img_viewer_base"
+        android:layout_alignBottom="@id/img_viewer_base"
+        android:background="@drawable/img_viewer_tooltip_background"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/button4"
+            android:layout_width="0pt"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Button"
+            android:textColor="@color/colorImgViewerTooltipText"
+            android:background="@drawable/img_viewer_tooltip_background" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="0pt"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Button"
+            android:textColor="@color/colorImgViewerTooltipText"
+            android:background="@drawable/img_viewer_tooltip_background" />
+    </LinearLayout>
+</RelativeLayout>

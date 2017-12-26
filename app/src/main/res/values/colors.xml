@@ -3,7 +3,12 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
     <color name="colorPathSelectorBackground">#0F0F0F</color>
     <color name="colorPathSelectorText">#F0F0F0</color>
     <color name="colorPathSelectorBorder">#707070</color>
+
+    <color name="colorImgViewerTooltipBackground">#202020</color>
+    <color name="colorImgViewerTooltipText">#7F7F7F</color>
+    <color name="colorImgViewerTooltipBorder">#5F5F5F</color>
 </resources>
