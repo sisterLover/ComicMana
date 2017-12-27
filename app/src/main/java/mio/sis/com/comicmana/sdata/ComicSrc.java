@@ -10,7 +10,7 @@ public class ComicSrc {
         來源訊息為在SD卡或網路定位漫畫資料位置的最低訊息
         也就是知道某漫畫之來源訊息後，完全可以取得其他漫畫訊息和漫畫圖片
      */
-    public class SrcType {
+    static public class SrcType {
         public static final int ST_NULL = 0,
         ST_LOCAL_FILE = 1,
         /*
@@ -22,6 +22,6 @@ public class ComicSrc {
          */
     }
     //  base info, for locating resource
-    int srcType;
-    String path;
+    public int srcType;
+    public String path;
 }
