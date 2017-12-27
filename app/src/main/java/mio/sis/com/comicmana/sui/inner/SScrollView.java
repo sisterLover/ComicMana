@@ -16,7 +16,7 @@ import android.widget.LinearLayout;
 
 public class SScrollView extends LinearLayout {
 
-    LinearLayout attachView;
+    SScrollAttachView attachView;
     SVScrollView svScrollView;
     SHScrollView shScrollView;
     ScaleGestureDetector scaleGestureDetector;
@@ -50,7 +50,7 @@ public class SScrollView extends LinearLayout {
         shScrollView = new SHScrollView(context);
         shScrollView.setLayoutParams(params);
 
-        attachView = new LinearLayout(context);
+        attachView = new SScrollAttachView(context);
         attachView.setLayoutParams(
                 new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         );
@@ -77,10 +77,43 @@ public class SScrollView extends LinearLayout {
         /*
             factor 表示最終係數
          */
+        attachView.setScaleX(factor);
+        attachView.setScaleY(factor);
+
+        shScrollView.SetScale(factor);
+        svScrollView.SetScale(factor);
+
+        ViewGroup.LayoutParams params =
+                new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
+        svScrollView.setLayoutParams(params);
+        svScrollView.requestLayout();
+
+        shScrollView.setLayoutParams(params);
+        shScrollView.requestLayout();
+
+        attachView.setLayoutParams(new LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        attachView.requestLayout();
+        //shScrollView.setScaleX(factor);
+        //svScrollView.setScaleY(factor);
+
+        /*post(new Runnable() {
+            @Override
+            public void run() {
+                computeScroll();
+                attachView.computeScroll();
+                svScrollView.computeScroll();
+                shScrollView.computeScroll();
+                svScrollView.invalidate();
+                shScrollView.invalidate();
+            }
+        });*/
     }
 
     class InnerScaleListener implements ScaleGestureDetector.OnScaleGestureListener {
-        static final float MAX_FACTOR = 2.0f, MIN_FACTOR = 1.0f;
+        static final float MAX_FACTOR = 2.0f, MIN_FACTOR = 0.5f;
         SScrollView sScrollView;
         float scaleFactor;
 
@@ -125,7 +158,7 @@ public class SScrollView extends LinearLayout {
                 case MotionEvent.ACTION_DOWN:
                     lastX = ev.getX();
                     lastY = ev.getY();
-                    Log.d("SSV_TAG", "DOWN at " + lastX + ", " + lastY);
+                    //Log.d("SSV_TAG", "DOWN at " + lastX + ", " + lastY);
                     break;
                 case MotionEvent.ACTION_MOVE:
                     curX = ev.getX();
@@ -134,14 +167,14 @@ public class SScrollView extends LinearLayout {
                     shScrollView.scrollBy((int) (lastX - curX), (int) (lastY - curY));
                     lastX = curX;
                     lastY = curY;
-                    Log.d("SSV_TAG", "Move to " + curX + ", " + curY);
+                    //Log.d("SSV_TAG", "Move to " + curX + ", " + curY);
                     break;
                 case MotionEvent.ACTION_UP:
                     curX = ev.getX();
                     curY = ev.getY();
                     svScrollView.scrollBy((int) (lastX - curX), (int) (lastY - curY));
                     shScrollView.scrollBy((int) (lastX - curX), (int) (lastY - curY));
-                    Log.d("SSV_TAG", "Up at " + curX + ", " + curY);
+                    //Log.d("SSV_TAG", "Up at " + curX + ", " + curY);
                     break;
                 default:
             }

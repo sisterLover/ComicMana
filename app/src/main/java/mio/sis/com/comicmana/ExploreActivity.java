@@ -4,7 +4,6 @@ import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -18,6 +17,7 @@ import mio.sis.com.comicmana.sfile.SFile;
 import mio.sis.com.comicmana.sui.PathSelector;
 import mio.sis.com.comicmana.sui.PathSelectorListener;
 import mio.sis.com.comicmana.sui.inner.SScrollView;
+import mio.sis.com.comicmana.sui.sszpview.SSZPView;
 
 public class ExploreActivity extends AppCompatActivity {
     PathSelector selector;
@@ -64,15 +64,28 @@ public class ExploreActivity extends AppCompatActivity {
         }
         linearLayout.addView(selector.GetView());
 
+
+
         linearLayout = (LinearLayout)findViewById(R.id.scroll_test_layout);
-        sScrollView = new SScrollView(this);
+
+        /*sScrollView = new SScrollView(this);
         sScrollView.setLayoutParams(
                 new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         sScrollView.setOrientation(LinearLayout.VERTICAL);
         linearLayout.addView(sScrollView);
 
         LayoutInflater inflater = LayoutInflater.from(this);
-        sScrollView.GetAttachView().addView(inflater.inflate(R.layout.scroll_test, null));
+        sScrollView.GetAttachView().addView(inflater.inflate(R.layout.scroll_test, null));*/
+        SSZPView sszpView = new SSZPView(this);
+        sszpView.setLayoutParams(
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT)
+        );
+        sszpView.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.addView(sszpView);
+        /*LayoutInflater inflater = LayoutInflater.from(this);
+        sszpView.SetChild(inflater.inflate(R.layout.scroll_test, null));*/
     }
 
     @Override
