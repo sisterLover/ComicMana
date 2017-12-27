@@ -10,6 +10,5 @@ public class ComicInfo {
      */
     ComicSrc src;
 
-    String thumbnail;   //  縮圖路徑
     int chapterCnt;
 }

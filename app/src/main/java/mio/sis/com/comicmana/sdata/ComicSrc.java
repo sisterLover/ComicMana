@@ -24,6 +24,4 @@ public class ComicSrc {
     //  base info, for locating resource
     int srcType;
     String path;
-
-    //  function
 }
