@@ -14,5 +14,8 @@ public class ComicInfo {
 
     String name;        //  漫畫名稱
     int chapterCnt;     //  章節數
+    int[] chapterPages; //  每個章節有多少頁
     Bitmap thumbnail;   //  縮圖
+
+    STime updateTime, lastOpenTime;
 }

@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 
 import mio.sis.com.comicmana.sdata.ComicPosition;
 import mio.sis.com.comicmana.sdata.ComicSrc;
-import mio.sis.com.comicmana.sui.SImgPage;
 
 /**
  * Created by Administrator on 2017/12/26.
