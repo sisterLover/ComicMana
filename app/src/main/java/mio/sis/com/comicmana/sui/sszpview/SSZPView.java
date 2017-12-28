@@ -15,24 +15,30 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 
 import mio.sis.com.comicmana.R;
+import mio.sis.com.comicmana.scache.DefaultPageCache;
+import mio.sis.com.comicmana.sdata.ComicInfo;
+import mio.sis.com.comicmana.sdata.ComicPosition;
+import mio.sis.com.comicmana.sdata.ComicSrc;
 
 /**
  * Created by Administrator on 2017/12/27.
  */
 
 public class SSZPView extends LinearLayout {
-    static final int STANDARD_WIDTH_FACTOR = 2;
+    static final int STANDARD_FACTOR = 2;
 
+    Context context;
     ScaleGestureDetector scaleGestureDetector;
     InnerScaleListener scaleListener;
-    int offsetX, offsetY,
-            childWidth, childHeight,
-            scaleChildWidth, scaleChildHeight,
-            width, height;
-    float zoomFactor;
-    LinearLayout attachView;
-    ArrayList<View> childs;
-    ArrayList<Integer> childsHeight;
+    int offsetX, offsetY,                       //  目前 scroll 狀態
+            childWidth, childHeight,            //  attachView 原始大小
+            scaleChildWidth, scaleChildHeight,  //  attachView 經過 zoomFactor 後的長寬
+            width, height;                      //  此 LinearLayout 的長寬
+    float zoomFactor;                           //  放大倍率
+    LinearLayout attachView;                    //  子容器，用來包含所有 child view
+    PageController pageController;
+
+    //  page info
 
     public SSZPView(Context context) {
         super(context);
@@ -54,7 +60,10 @@ public class SSZPView extends LinearLayout {
         Initialize(context);
     }
     void Initialize(Context context) {
+        this.context = context;
         offsetX = offsetY = 0;
+        width = height = 0;
+
         zoomFactor = InnerScaleListener.INI_FACTOR;
 
         scaleListener = new InnerScaleListener();
@@ -69,11 +78,20 @@ public class SSZPView extends LinearLayout {
 
         addView(attachView);
 
-        childs = new ArrayList<>();
-        childsHeight = new ArrayList<>();
+        pageController = new PageController(context, this);
     }
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         return true;
+    }
+
+    public void PostComicInfo(ComicInfo info, ComicPosition position) {
+        post(new PostComicInfoRunnable(this, info, position));
+    }
+    public LinearLayout GetAttachView() {
+        return attachView;
+    }
+    public float GetZoomFactor() {
+        return zoomFactor;
     }
 
     void OnScale(float factor/*, float x, float y*/) {
@@ -103,6 +121,11 @@ public class SSZPView extends LinearLayout {
 
         invalidate();
     }
+
+    public int GetOffsetX() { return offsetX; }
+    public int GetOffsetY() { return offsetY; }
+    public void SetOffsetX(int offsetX) { this.offsetX = offsetX; }
+    public void SetOffsetY(int offsetY) { this.offsetY = offsetY; }
 
     void BoundOffset() {
         if(offsetX+width>scaleChildWidth) offsetX = scaleChildWidth - width;
@@ -135,47 +158,36 @@ public class SSZPView extends LinearLayout {
         super.dispatchDraw(canvas);
     }
 
+    public boolean IsSizeAvailable() { return width != 0; }
     public int GetStandardWidth() {
-        return width*STANDARD_WIDTH_FACTOR;
+        return width*STANDARD_FACTOR;
     }
-    /*
-        push 函數必須確保 view 已經 setLayoutParam
-     */
-    public void PushFrontView(View view) {
-        int viewHeight = view.getLayoutParams().height;
-        childsHeight.add(0, viewHeight);
-        offsetY += viewHeight*zoomFactor;
-        childs.add(0, view);
-        attachView.addView(view, 0);
-
-        invalidate();
-    }
-    public void PopFrontView() {
-        offsetY -= childsHeight.get(0)*zoomFactor;
-        childsHeight.remove(0);
-        childs.set(0, null);
-        childs.remove(0);
-        attachView.removeViewAt(0);
-
-        invalidate();
-    }
-    public void PushBackView(View view) {
-        attachView.addView(view);
-        childs.add(view);
-        childsHeight.add(view.getLayoutParams().height);
-    }
-    public void PopBackView() {
-        attachView.removeView(childs.get(childs.size()-1));
-        childs.set(childs.size()-1, null);
-        childs.remove(childs.size()-1);
-        childsHeight.remove(childsHeight.size()-1);
-    }
+    public int GetStandardHeight() { return height*STANDARD_FACTOR; }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         width = w;
         height = h;
+
+        DefaultPageCache.SetParams(GetStandardWidth(), GetStandardHeight());
+        Log.d("SSZ_TAG", "size = " + width + ", " + height);
+    }
+
+    class PostComicInfoRunnable implements Runnable {
+        SSZPView sszpView;
+        ComicInfo comicInfo;
+        ComicPosition comicPosition;
+
+        public PostComicInfoRunnable(SSZPView sszpView, ComicInfo comicInfo, ComicPosition comicPosition) {
+            this.sszpView = sszpView;
+            this.comicInfo = comicInfo;
+            this.comicPosition = comicPosition;
+        }
+        @Override
+        public void run() {
+            sszpView.pageController.SetComicInfo(comicInfo, comicPosition);
+        }
     }
 
     class InnerScaleListener implements ScaleGestureDetector.OnScaleGestureListener {

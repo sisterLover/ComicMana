@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import mio.sis.com.comicmana.scache.DefaultPageCache;
-import mio.sis.com.comicmana.scache.ImgCache;
+import mio.sis.com.comicmana.scache.ImageCache;
 import mio.sis.com.comicmana.sdata.ComicPosition;
 import mio.sis.com.comicmana.sdata.ComicSrc;
 import mio.sis.com.comicmana.sui.sszpview.SSZPView;
@@ -24,7 +24,8 @@ public class SImagePage extends View {
         public SSZPView sszpView;
         public ComicSrc src;
         public ComicPosition position;
-        public Params(ComicSrc src, ComicPosition position) {
+        public Params(SSZPView sszpView, ComicSrc src, ComicPosition position) {
+            this.sszpView = sszpView;
             this.src = src;
             this.position = position;
         }
@@ -148,8 +149,11 @@ public class SImagePage extends View {
         }
     }
 
-    void RequestImage() {
-        ImgCache.GetComicPage(this, src, position);
+    /*
+        由 UI thread 呼叫，除了 Error 重試外，此函數只可以被呼叫一次
+     */
+    public void RequestImage() {
+        ImageCache.GetComicPage(this, src, position);
     }
 
     class RequestThread extends Thread {

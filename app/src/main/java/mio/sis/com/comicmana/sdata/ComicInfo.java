@@ -10,12 +10,16 @@ public class ComicInfo {
     /*
         comic info 描述一個漫畫所有訊息
      */
-    ComicSrc src;
+    public ComicSrc src;
 
-    String name;        //  漫畫名稱
-    int chapterCnt;     //  章節數
-    int[] chapterPages; //  每個章節有多少頁
-    Bitmap thumbnail;   //  縮圖
+    public String name;        //  漫畫名稱
+    public int chapterCnt;     //  章節數
+    public int[] chapterPages;
+    /*
+      每個章節有多少頁 chapterPages 存取的時候是以 1 為基底(直觀存取章節)
+      因此 chapterCnt = chapterPages.length + 1
+       */
+    public Bitmap thumbnail;   //  縮圖
 
-    STime updateTime, lastOpenTime;
+    public STime updateTime, lastOpenTime;
 }

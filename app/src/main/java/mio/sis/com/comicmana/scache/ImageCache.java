@@ -10,9 +10,9 @@ import mio.sis.com.comicmana.sui.SImagePage;
  * Created by Administrator on 2017/12/26.
  */
 
-public class ImgCache {
+public class ImageCache {
     /*
-        ImgCache 負責在記憶體-SD卡-網路三者之間存取圖片
+        ImageCache 負責在記憶體-SD卡-網路三者之間存取圖片
      */
 
 

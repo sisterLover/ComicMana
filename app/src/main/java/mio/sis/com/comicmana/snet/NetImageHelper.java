@@ -22,5 +22,10 @@ public interface NetImageHelper {
             失敗時呼叫此函數且 bitmap = null
          */
         void PageRecieve(Bitmap bitmap);
+        /*
+            接收進度更新
+            percent = 0~100
+         */
+        void UpdateProgress(int percent);
     }
 }

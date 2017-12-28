@@ -6,14 +6,14 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import mio.sis.com.comicmana.R;
-import mio.sis.com.comicmana.scache.ImgCache;
+import mio.sis.com.comicmana.scache.ImageCache;
 
 /**
  * Created by Administrator on 2017/12/25.
  */
 
 public class ImgViewer {
-    ImgCache cache;
+    ImageCache cache;
 
     //  ui
     Context context;
@@ -21,7 +21,7 @@ public class ImgViewer {
     boolean tooltipVisible;
     LinearLayout tooltipTop, tooltipBottom, content;
 
-    public ImgViewer(Context context, ImgCache cache) {
+    public ImgViewer(Context context, ImageCache cache) {
         this.context = context;
         this.cache = cache;
         tooltipVisible = false;
