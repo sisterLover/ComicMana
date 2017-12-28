@@ -94,7 +94,10 @@ public class SImagePage extends View {
     /*
         更新圖示為漫畫影像
      */
-    public void SetImage(Bitmap bitmap) {
+    public void PostImage(Bitmap bitmap) {
+        post(new PostRunnable(this, PostRunnable.PRT_BITMAP, 0, bitmap));
+    }
+    void SetImage(Bitmap bitmap) {
         status = SIP_READY;
         this.bitmap = bitmap;
 
@@ -104,22 +107,28 @@ public class SImagePage extends View {
         requestLayout();*/
     }
     /*
-        更新圖示為錯誤提醒圖示
+        更新圖示為目前讀取進度
+        percent = 0~100
      */
-    public void SetError() {
-        status = SIP_ERROR;
-
-        new RequestThread(this).start();
+    public void PostProgress(int percent) {
+        post(new PostRunnable(this, PostRunnable.PRT_WAIT, percent, null));
+    }
+    void SetProgress(int percent) {
+        status = SIP_WAIT;
+        this.percent = percent;
 
         invalidate();
     }
     /*
-        更新圖示為目前讀取進度
-        percent = 0~100
+        更新圖示為錯誤提醒圖示
      */
-    public void SetProgress(int percent) {
-        status = SIP_WAIT;
-        this.percent = percent;
+    public void PostError() {
+        post(new PostRunnable(this, PostRunnable.PRT_ERROR, 0, null));
+    }
+    void SetError() {
+        status = SIP_ERROR;
+
+        new RequestThread(this).start();
 
         invalidate();
     }
@@ -156,6 +165,35 @@ public class SImagePage extends View {
 
             SystemClock.sleep(5000);
             imagePage.RequestImage();
+        }
+    }
+
+    class PostRunnable implements Runnable {
+        static final int PRT_BITMAP = 0,
+        PRT_WAIT=1,
+        PRT_ERROR=2;
+
+        SImagePage imagePage;
+        int type, percent;
+        Bitmap bitmap;
+
+        PostRunnable(SImagePage imagePage, int type, int percent, Bitmap bitmap) {
+            this.imagePage = imagePage;
+            this.type = type;
+            this.percent = percent;
+            this.bitmap = bitmap;
+        }
+        @Override
+        public void run() {
+            if(type == PRT_BITMAP) {
+                imagePage.SetImage(bitmap);
+            }
+            else if(type == PRT_WAIT) {
+                imagePage.SetProgress(percent);
+            }
+            else if(type == PRT_ERROR) {
+                imagePage.SetError();
+            }
         }
     }
 }
