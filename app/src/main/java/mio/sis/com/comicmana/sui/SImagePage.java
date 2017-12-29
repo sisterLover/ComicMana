@@ -104,8 +104,8 @@ public class SImagePage extends View {
 
         //  提醒 SSZPView 更新，而不是 view 直接更新
 
-        /*setLayoutParams(new LinearLayout.LayoutParams(GetWidth(), GetHeight()));
-        requestLayout();*/
+        setLayoutParams(new LinearLayout.LayoutParams(GetWidth(), GetHeight()));
+        sszpView.AttachViewUpdate();
     }
     /*
         更新圖示為目前讀取進度
@@ -142,7 +142,7 @@ public class SImagePage extends View {
             canvas.drawBitmap(bitmap, 0, 0, null);
         }
         else if(status == SIP_WAIT) {
-            DefaultPageCache.DrawPercent(canvas, percent);
+            DefaultPageCache.DrawPercent(canvas, position.page, percent);
         }
         else if(status == SIP_ERROR) {
             DefaultPageCache.DrawError(canvas);

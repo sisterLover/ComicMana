@@ -1,6 +1,7 @@
 package mio.sis.com.comicmana.sui.sszpview;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -10,15 +11,14 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-
-import java.util.ArrayList;
 
 import mio.sis.com.comicmana.R;
 import mio.sis.com.comicmana.scache.DefaultPageCache;
 import mio.sis.com.comicmana.sdata.ComicInfo;
 import mio.sis.com.comicmana.sdata.ComicPosition;
-import mio.sis.com.comicmana.sdata.ComicSrc;
+import mio.sis.com.comicmana.sui.HintText;
 
 /**
  * Created by Administrator on 2017/12/27.
@@ -107,7 +107,12 @@ public class SSZPView extends LinearLayout {
         zoomFactor = factor;
 
         BoundOffset();
-        pageController.UpdateScrollInfo(offsetY);
+
+        if(pageController.ScrollAvailable()) {
+            pageController.UpdateScrollInfo(offsetY);
+            pageController.CheckScroll();
+            pageController.UpdatePageHint(HintText.STANDARD_HINT);
+        }
 
         invalidate();
     }
@@ -119,8 +124,11 @@ public class SSZPView extends LinearLayout {
         BoundOffset();
 
         Log.d("SSZ_TAG", "Scroll " + offsetX + ", " + offsetY);
-        pageController.UpdateScrollInfo(offsetY);
-        pageController.CheckScroll();
+        if(pageController.ScrollAvailable()) {
+            pageController.UpdateScrollInfo(offsetY);
+            pageController.CheckScroll();
+            pageController.UpdatePageHint(HintText.STANDARD_HINT);
+        }
 
         invalidate();
     }
@@ -139,6 +147,13 @@ public class SSZPView extends LinearLayout {
         if(offsetY<0) offsetY = 0;
     }
 
+    public void AttachViewUpdate() {
+        CalculateAttachSize();
+        if(pageController.ScrollAvailable()) {
+            pageController.CalculateViewHeightInfo();
+            pageController.SetOffsetY();
+        }
+    }
     void CalculateAttachSize() {
         attachView.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
         childWidth = attachView.getMeasuredWidth();
@@ -175,7 +190,42 @@ public class SSZPView extends LinearLayout {
         width = w;
         height = h;
 
-        DefaultPageCache.SetParams(GetStandardWidth(), GetStandardHeight());
+        if(!DefaultPageCache.ParamAbailable()) {
+            DefaultPageCache.SetParams(context, GetStandardWidth(), GetStandardHeight());
+            ImageView imageView = new ImageView(context);
+            Bitmap bitmap = DefaultPageCache.GetTestComic(1);
+            imageView.setImageBitmap(bitmap);
+            imageView.setLayoutParams(new LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            ));
+            attachView.addView(imageView);
+
+            bitmap = Bitmap.createBitmap(DefaultPageCache.GetWidth(), DefaultPageCache.GetHeight(),
+                    Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            DefaultPageCache.DrawError(canvas);
+            imageView = new ImageView(context);
+            imageView.setImageBitmap(bitmap);
+            imageView.setLayoutParams(new LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            ));
+            attachView.addView(imageView);
+
+            bitmap = Bitmap.createBitmap(DefaultPageCache.GetWidth(), DefaultPageCache.GetHeight(),
+                    Bitmap.Config.ARGB_8888);
+            canvas = new Canvas(bitmap);
+            DefaultPageCache.DrawPercent(canvas, 3, 67);
+            imageView = new ImageView(context);
+            imageView.setImageBitmap(bitmap);
+            imageView.setLayoutParams(new LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            ));
+            attachView.addView(imageView);
+            CalculateAttachSize();
+        }
         Log.d("SSZ_TAG", "size = " + width + ", " + height);
     }
 

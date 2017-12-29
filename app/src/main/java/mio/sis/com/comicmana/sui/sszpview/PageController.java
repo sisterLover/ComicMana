@@ -11,6 +11,7 @@ import java.util.Set;
 import mio.sis.com.comicmana.R;
 import mio.sis.com.comicmana.sdata.ComicInfo;
 import mio.sis.com.comicmana.sdata.ComicPosition;
+import mio.sis.com.comicmana.sui.HintText;
 import mio.sis.com.comicmana.sui.SImagePage;
 
 /**
@@ -108,12 +109,14 @@ public class PageController {
         if (nextGroup.Valid() && nextGroup.position.chapter == currentGroup.position.chapter) GenNextGroup();
 
         CalculateViewHeightInfo();
+        sszpView.CalculateAttachSize();
         //  計算 scroll 位置
         scrollGroup = GROUP_CURRENT;
         scrollPage = currentPage.page - currentGroup.position.page + 1;
         scrollOffset = 0;
 
         SetOffsetY();
+        UpdatePageHint(HintText.STANDARD_HINT);
     }
     /*
         回傳 int[3]，每個代表 viewGroup.addView(view, position) 的 position 參數
@@ -192,9 +195,6 @@ public class PageController {
             }
         }
         attachView.removeViews(insertPosition[insertIndex], groupSize);
-
-        CalculateViewHeightInfo();
-        SetOffsetY();
     }
     SImagePage[] GenGroupPage(ComicPosition group, int groupSize) {
         SImagePage[] pages = new SImagePage[groupSize];
@@ -364,6 +364,42 @@ public class PageController {
         }
     }
     /*
+        更新 hint, 顯示目前章節跟頁數
+     */
+    public void UpdatePageHint(HintText hintText) {
+        int chapter = 0, page = 0, totalPage = 0;
+        if (scrollGroup == GROUP_HEAD) {
+            //  first page
+            if (lastGroup.inserted) {
+                chapter = lastGroup.position.chapter;
+                page = lastGroup.position.page;
+            } else {
+                chapter = currentGroup.position.chapter;
+                page = currentGroup.position.page;
+            }
+        } else if (scrollGroup == GROUP_LAST) {
+            chapter = lastGroup.position.chapter;
+            page = lastGroup.position.page + scrollPage - 1;
+        } else if (scrollGroup == GROUP_CURRENT) {
+            chapter = currentGroup.position.chapter;
+            page = currentGroup.position.page + scrollPage - 1;
+        } else if (scrollGroup == GROUP_NEXT) {
+            chapter = nextGroup.position.chapter;
+            page = nextGroup.position.page + scrollPage - 1;
+        } else {
+            //  last page
+            if (nextGroup.inserted) {
+                chapter = nextGroup.position.chapter;
+                page = nextGroup.position.page + nextGroup.size - 1;
+            } else {
+                chapter = currentGroup.position.chapter;
+                page = currentGroup.position.page + currentGroup.size - 1;
+            }
+        }
+        totalPage = comicInfo.chapterPages[chapter];
+        hintText.UpdateText("CH" + chapter + "  " + page + "/" + totalPage);
+    }
+    /*
         檢查目前 scroll 狀態是否需要更改 pageGroup
      */
     public void CheckScroll() {
@@ -395,6 +431,7 @@ public class PageController {
             scrollGroup = GROUP_CURRENT;
             UpdateHeadString();
             CalculateViewHeightInfo();
+            sszpView.CalculateAttachSize();
             SetOffsetY();
         }
         if(NeedUpdateNextGroup(scaleOffsetY)) {
@@ -418,6 +455,7 @@ public class PageController {
             scrollGroup = GROUP_CURRENT;
             UpdateHeadString();
             CalculateViewHeightInfo();
+            sszpView.CalculateAttachSize();
             SetOffsetY();
         }
     }
@@ -469,6 +507,7 @@ public class PageController {
         if (scrollGroup > GROUP_CURRENT) baseIndex += currentGroup.size;
         baseIndex += (scrollPage - 1);
         sszpView.SetOffsetY((int) ((viewHeightInfos[baseIndex] + scrollOffset) * sszpView.GetZoomFactor()));
+        sszpView.invalidate();
     }
 
     class GroupInfo {

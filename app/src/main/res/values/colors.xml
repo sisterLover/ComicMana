@@ -16,4 +16,7 @@
     <color name="colorSSZPViewText">#0F0F0F</color>
     <color name="colorSSZPViewProgressEmpty">#D0D0D0</color>
     <color name="colorSSZPViewProgressFill">#0F0F0F</color>
+
+    <color name="colorHintBackground">#0F0F0F</color>
+    <color name="colorHintText">#D0D0D0</color>
 </resources>

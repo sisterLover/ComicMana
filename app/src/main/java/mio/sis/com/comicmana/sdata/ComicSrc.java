@@ -12,11 +12,16 @@ public class ComicSrc {
      */
     static public class SrcType {
         public static final int ST_NULL = 0,
-        ST_LOCAL_FILE = 1,
+        ST_TEST_SRC = 1,
+        /*
+            path = unuse
+         */
+        ST_LOCAL_FILE = 10,
         /*
             path = SD card path(absolute)
          */
-        ST_NET_EX = 2;
+
+        ST_NET_EX = 100;
         /*
             path = URL
          */
