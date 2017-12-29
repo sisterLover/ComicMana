@@ -126,9 +126,9 @@ public class PageController {
         result[0] = 0;
         if(head != null) ++result[0];
         result[1] = result[0];
-        if(lastGroup.inserted) result[1] += lastGroup.size;
+        if(lastGroup.Valid() && lastGroup.inserted) result[1] += lastGroup.size;
         result[2] = result[1];
-        if(currentGroup.inserted) result[2] += currentGroup.size;
+        if(currentGroup.Valid() && currentGroup.inserted) result[2] += currentGroup.size;
         return result;
     }
     void GenLastGroup() {

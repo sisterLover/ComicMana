@@ -120,6 +120,7 @@ public class SSZPView extends LinearLayout {
 
         Log.d("SSZ_TAG", "Scroll " + offsetX + ", " + offsetY);
         pageController.UpdateScrollInfo(offsetY);
+        pageController.CheckScroll();
 
         invalidate();
     }
