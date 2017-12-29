@@ -107,6 +107,7 @@ public class SSZPView extends LinearLayout {
         zoomFactor = factor;
 
         BoundOffset();
+        pageController.UpdateScrollInfo(offsetY);
 
         invalidate();
     }
@@ -118,6 +119,7 @@ public class SSZPView extends LinearLayout {
         BoundOffset();
 
         Log.d("SSZ_TAG", "Scroll " + offsetX + ", " + offsetY);
+        pageController.UpdateScrollInfo(offsetY);
 
         invalidate();
     }
@@ -159,6 +161,8 @@ public class SSZPView extends LinearLayout {
     }
 
     public boolean IsSizeAvailable() { return width != 0; }
+    public int GetWidth() { return width; }
+    public int GetHeight() { return height; }
     public int GetStandardWidth() {
         return width*STANDARD_FACTOR;
     }
