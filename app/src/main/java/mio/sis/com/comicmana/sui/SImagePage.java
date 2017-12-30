@@ -105,7 +105,9 @@ public class SImagePage extends View {
         //  提醒 SSZPView 更新，而不是 view 直接更新
 
         setLayoutParams(new LinearLayout.LayoutParams(GetWidth(), GetHeight()));
+        //requestLayout();
         sszpView.AttachViewUpdate();
+        sszpView.invalidate();
     }
     /*
         更新圖示為目前讀取進度
@@ -119,6 +121,7 @@ public class SImagePage extends View {
         this.percent = percent;
 
         invalidate();
+        sszpView.invalidate();
     }
     /*
         更新圖示為錯誤提醒圖示
@@ -129,7 +132,7 @@ public class SImagePage extends View {
     void SetError() {
         status = SIP_ERROR;
 
-        new RequestThread(this).start();
+        //new RequestThread(this).start();
 
         invalidate();
     }

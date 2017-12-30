@@ -28,11 +28,11 @@ public class TestComicImageHelper implements NetImageHelper {
         public void run() {
             super.run();
 
-            for(int i=0;i<=10;++i) {
-                callback.UpdateProgress(10*i);
+            for(int i=0;i<=5;++i) {
+                callback.UpdateProgress(20*i);
                 SystemClock.sleep(500);
             }
-            callback.PageRecieve(DefaultPageCache.GetTestComic(position.page));
+            callback.PageRecieve(DefaultPageCache.GetTestComic(position.chapter, position.page));
         }
     }
 }

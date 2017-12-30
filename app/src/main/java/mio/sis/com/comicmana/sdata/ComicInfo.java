@@ -23,24 +23,29 @@ public class ComicInfo {
 
     public STime updateTime, lastOpenTime;
 
+    public ComicInfo() {
+        src = new ComicSrc();
+    }
+
     static public ComicInfo TEST_COMIC_INFO = null;
     static public ComicInfo GetTestComicInfo() {
         if(TEST_COMIC_INFO != null) return TEST_COMIC_INFO;
         TEST_COMIC_INFO = new ComicInfo();
         TEST_COMIC_INFO.src.srcType = ComicSrc.SrcType.ST_TEST_SRC;
-        TEST_COMIC_INFO.chapterCnt = 10;
+        TEST_COMIC_INFO.chapterCnt = 3;
         TEST_COMIC_INFO.chapterPages = new int[TEST_COMIC_INFO.chapterCnt+1];
 
         TEST_COMIC_INFO.chapterPages[1] = 7;
         TEST_COMIC_INFO.chapterPages[2] = 8;
         TEST_COMIC_INFO.chapterPages[3] = 9;
-        TEST_COMIC_INFO.chapterPages[4] = 6;
+        /*TEST_COMIC_INFO.chapterPages[4] = 6;
         TEST_COMIC_INFO.chapterPages[5] = 7;
         TEST_COMIC_INFO.chapterPages[6] = 9;
         TEST_COMIC_INFO.chapterPages[7] = 8;
         TEST_COMIC_INFO.chapterPages[8] = 6;
         TEST_COMIC_INFO.chapterPages[9] = 7;
         TEST_COMIC_INFO.chapterPages[10] = 8;
+        */
         return TEST_COMIC_INFO;
     }
 }

@@ -40,7 +40,7 @@ public class DefaultPageCache {
         GenPercentPage();
         canvas.drawBitmap(percentPage, 0, 0, null);
 
-        DrawText(canvas, viewWidth, viewHeight, "" + percent);
+        DrawText(canvas, viewWidth, viewHeight, "" + percent + "%");
         if(percent < 0) percent = 0;
         if(percent > 100) percent = 100;
         DrawArc(canvas, viewWidth, viewHeight, ContextCompat.getColor(context, R.color.colorSSZPViewProgressFill), 0, 360*percent/100);
@@ -104,11 +104,19 @@ public class DefaultPageCache {
                 (width - bound.right + bound.left) / 2, (height + bound.bottom - bound.top) / 2,
                 paint);
     }
-    static public Bitmap GetTestComic(int page) {
+    static public Bitmap GetTestComic(int chapter, int page) {
         Bitmap bitmap = Bitmap.createBitmap(viewWidth, viewHeight/2, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         canvas.drawColor(ContextCompat.getColor(context, R.color.colorSSZPViewBackground));
-        DrawText(canvas, bitmap.getWidth(), bitmap.getHeight(), "Test Comic "+ page);
+
+        Paint paint = new Paint();
+
+        paint.setColor(ContextCompat.getColor(context, R.color.colorSSZPViewText));
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(4.0f);
+        canvas.drawRect(0, 0, bitmap.getWidth(), bitmap.getHeight(), paint);
+
+        DrawText(canvas, bitmap.getWidth(), bitmap.getHeight(), "Test Comic "+ +chapter + "-" + page);
         return bitmap;
     }
 

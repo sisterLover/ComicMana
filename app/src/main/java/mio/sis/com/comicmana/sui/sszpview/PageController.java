@@ -1,6 +1,7 @@
 package mio.sis.com.comicmana.sui.sszpview;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -19,6 +20,7 @@ import mio.sis.com.comicmana.sui.SImagePage;
  */
 
 public class PageController {
+    static final String PC_TAG = "PC_TAG";
     static final int PAGE_GROUP_SIZE = 5;  //  5 頁為一個單位
     static final String HEAD_LOADING = "載入中...", HEAD_NO_MORE = "已經沒有了QQ";
     static final int
@@ -67,10 +69,12 @@ public class PageController {
         必須在 UI Thread 被呼叫
      */
     public void SetComicInfo(ComicInfo comicInfo, ComicPosition comicPosition) {
-        if (!sszpView.IsSizeAvailable() || head == null) {
+        if (!sszpView.IsSizeAvailable()) {
+            Log.d(PC_TAG, "Repost ComicInfo");
             sszpView.PostComicInfo(comicInfo, comicPosition);
             return;
         }
+        Log.d(PC_TAG,"Setting ComicInfo");
         LinearLayout attachView = sszpView.GetAttachView();
         attachView.removeAllViews();
         head = tail = null;
@@ -92,7 +96,7 @@ public class PageController {
         if (currentPage.page > comicInfo.chapterPages[currentPage.chapter]) {
             currentPage.page = comicInfo.chapterPages[currentPage.chapter];
         }
-
+        Log.d(PC_TAG, "Current Postion = " + currentPage.chapter + "-" + currentPage.page);
         //  計算 group
         currentGroup.position = new ComicPosition();
         currentGroup.position.chapter = currentPage.chapter;
@@ -101,6 +105,10 @@ public class PageController {
         currentGroup.UpdateSize();
         lastGroup.SetLastGroupOf(currentGroup);
         nextGroup.SetNextGroupOf(currentGroup);
+
+        currentGroup.Debug("Current");
+        lastGroup.Debug("Last");
+        nextGroup.Debug("Next");
 
         UpdateHeadString();
 
@@ -159,7 +167,7 @@ public class PageController {
         int[] insertPosition = GenInsertPosition();
         LinearLayout attachView = sszpView.GetAttachView();
         for(int i=0;i<pages.length;++i) {
-            attachView.addView(pages[i], insertPosition[insertIndex] + 1);
+            attachView.addView(pages[i], insertPosition[insertIndex] + i);
         }
         for(int i=0;i<pages.length;++i) {
             pages[i].RequestImage();
@@ -202,13 +210,14 @@ public class PageController {
             ComicPosition position = new ComicPosition();
             position.chapter = group.chapter;
             position.page = group.page + i;
+            Log.d(PC_TAG, "GenPage " + position.chapter + "-" + position.page);
             SImagePage.Params params = new SImagePage.Params(sszpView ,comicInfo.src, position);
             pages[i] = new SImagePage(context, params);
         }
         return pages;
     }
     public void GenHeadPage() {
-        if(head == null) return;
+        if(head != null) return;
 
         LayoutInflater inflater = LayoutInflater.from(context);
         head = (LinearLayout)inflater.inflate(R.layout.sszp_head_page_layout, null);
@@ -230,9 +239,9 @@ public class PageController {
     }
     void UpdateHeadString() {
         boolean headAvailable = true, tailAvailable = true;
-        if(lastGroup == null) headAvailable = false;
+        if(!lastGroup.Valid()) headAvailable = false;
         else if(GetLastGroup(lastGroup.position) == null) headAvailable = false;
-        if(nextGroup == null) tailAvailable = false;
+        if(!nextGroup.Valid()) tailAvailable = false;
         else if(GetNextGroup(nextGroup.position) == null) tailAvailable = false;
         SetHeadPage(headAvailable, tailAvailable);
     }
@@ -321,14 +330,14 @@ public class PageController {
         //  +2 = head && tail
         viewHeightInfos[0] = 0;
         viewHeightInfos[1] = head.getMeasuredHeight();
-        for(int i=0;i<lastGroup.size;++i) {
+        for (int i = 0; i < lastGroup.size && lastGroup.inserted; ++i) {
             viewHeightInfos[2 + i] = viewHeightInfos[1 + i] + lastGroup.pages[i].GetHeight();
         }
-        for(int i=0;i<currentGroup.size;++i) {
+        for (int i = 0; i < currentGroup.size && currentGroup.inserted; ++i) {
             viewHeightInfos[2 + lastGroup.size + i] =
                     viewHeightInfos[1 + lastGroup.size + i] + currentGroup.pages[i].GetHeight();
         }
-        for(int i=0;i<nextGroup.size;++i) {
+        for (int i = 0; i < nextGroup.size && nextGroup.inserted; ++i) {
             viewHeightInfos[2 + lastGroup.size + currentGroup.size + i] =
                     viewHeightInfos[1 + lastGroup.size + currentGroup.size + i] + nextGroup.pages[i].GetHeight();
         }
@@ -367,6 +376,7 @@ public class PageController {
         更新 hint, 顯示目前章節跟頁數
      */
     public void UpdatePageHint(HintText hintText) {
+        //DebugScrollInfo();
         int chapter = 0, page = 0, totalPage = 0;
         if (scrollGroup == GROUP_HEAD) {
             //  first page
@@ -403,39 +413,85 @@ public class PageController {
         檢查目前 scroll 狀態是否需要更改 pageGroup
      */
     public void CheckScroll() {
-        int scaleOffsetY = (int) (sszpView.GetOffsetX() / sszpView.GetZoomFactor());
-        if(NeedUpdateLastGroup(scaleOffsetY)) {
+        int scaleOffsetY = (int) (sszpView.GetOffsetY() / sszpView.GetZoomFactor());
+        /*
+            scaleSSZPViewHeight 表示現在頁面顯示的 pixel (unscale 狀態)
+            因為 scroll info 都是記錄 unscale，要比較現在是否在最後一頁的時候
+            使用 viewHeightInfo.Back() - sszpView.GetHeight() 會錯，因為 viewHeight 是 unscale
+            而 sszpView.GetHeight 的單位是跟 zoomFactor 同步的
+            因為放大縮小的時候 sszpView 會保持同樣 layout 高度
+            而顯示內容的 pixel height 卻會跟著 zoom in 變動
+         */
+        int scaleSSZPViewHeight = (int) (sszpView.GetHeight() / sszpView.GetZoomFactor());
+        boolean scrollUpdate = false;   //  是否需要更新卷軸
+        if (NeedUpdateLastGroup(scaleOffsetY)) {
+            Log.d(PC_TAG, "CheckScroll NeedUpdateLastGroup");
+            /*  need 在捲動到 head
+             或是 lastGroup 第一頁
+             或是 lastGroup 不存在/尚未插入捲動到 currentGroup 第一頁時
+             觸發
+              */
             if (lastGroup.inserted) {
                 /*
                   last group pages 已經插入 attachView
+                  表示當前 scroll 在 head 或是 lastGroup 第一頁
+                  若現在 scroll 在 lastGroup 則因為
                   需要
                     next group = current group
                     current group = last group
+                  所以 scrollGroup = GROUP_CURRENT
+                  若 scroll 在 head 則分成兩種情況
+                  若 lastGroup 不存在則保持原樣
+                  若 lastGroup 存在則 scrollGroup = GROUP_CURRENT (跳回 current group 第一頁)
                   */
                 RemoveGroup(GROUP_NEXT, nextGroup.size);
                 nextGroup = currentGroup;
                 currentGroup = lastGroup;
                 lastGroup = new GroupInfo();
                 lastGroup.SetLastGroupOf(currentGroup);
+                if (scrollGroup == GROUP_LAST)
+                    scrollGroup = GROUP_CURRENT;
+                /*else {
+                    if(lastGroup.Valid()) {
+                        //  這個 if 是這段唯一做事的 code
+                        //  但是進入此區條件為 scrollGroup == HEAD && lastGroup.Valid()
+                        //  以兩個條件在下面 Valid 的邏輯中必定執行到 GenLastGroup 且更新 scrollGroup
+                        scrollGroup = GROUP_CURRENT;
+                        scrollPage = 1;
+                        scrollOffset = 0;
+                    }
+                    else {
+                        //  stay in GROUP_HEAD
+                    }
+                }*/
+                scrollUpdate = true;
             }
             /*
-                last group pages 尚未插入到 attachView 則直接插入
+              執行到這邊 lastGroup 存在的話要印出來且 scroll 設定成 GROUP_CURRENT 第一頁 top
+              否則保持原樣
+               */
+            /*
+                last group pages 尚未插入到 attachView
+                或是載入了新的 lastGroup
+                則直接插入
              */
             if (lastGroup.Valid()) {
                 if (scrollGroup == GROUP_HEAD ||
                         (lastGroup.position.chapter == currentGroup.position.chapter)) {
                     GenLastGroup();
+
+                    if (scrollGroup != GROUP_CURRENT) {
+                        scrollGroup = GROUP_CURRENT;
+                        scrollPage = 1;
+                        scrollOffset = 0;
+                    }
+                    scrollUpdate = true;
                 }
             }
-            //  無論 lastGroup.inserted 目前 scroll 狀態都是 currentGroup
-            scrollGroup = GROUP_CURRENT;
-            UpdateHeadString();
-            CalculateViewHeightInfo();
-            sszpView.CalculateAttachSize();
-            SetOffsetY();
         }
-        if(NeedUpdateNextGroup(scaleOffsetY)) {
-            if(nextGroup.inserted) {
+        if (NeedUpdateNextGroup(scaleOffsetY, scaleSSZPViewHeight)) {
+            Log.d(PC_TAG, "CheckScroll NeedUpdateNextGroup");
+            if (nextGroup.inserted) {
                 /*
                     last = current
                     current = next
@@ -445,14 +501,26 @@ public class PageController {
                 currentGroup = nextGroup;
                 nextGroup = new GroupInfo();
                 nextGroup.SetNextGroupOf(currentGroup);
+                if (scrollGroup == GROUP_NEXT)
+                    scrollGroup = GROUP_CURRENT;
+                scrollUpdate = true;
             }
-            if(nextGroup.Valid()) {
-                if((scaleOffsetY >= (viewHeightInfos[viewHeightInfos.length - 1] - sszpView.GetHeight())) ||
+            if (nextGroup.Valid()) {
+                if ((scaleOffsetY >= (viewHeightInfos[viewHeightInfos.length - 1] - scaleSSZPViewHeight)) ||
                         (nextGroup.position.chapter == currentGroup.position.chapter)) {
                     GenNextGroup();
+
+                    if (scrollGroup != GROUP_CURRENT) {
+                        scrollGroup = GROUP_CURRENT;
+                        scrollPage = currentGroup.size;
+                        scrollOffset = currentGroup.pages[currentGroup.size - 1].GetHeight() - scaleSSZPViewHeight;
+                        if (scrollOffset < 0) scrollOffset = 0;
+                    }
+                    scrollUpdate = true;
                 }
             }
-            scrollGroup = GROUP_CURRENT;
+        }
+        if (scrollUpdate) {
             UpdateHeadString();
             CalculateViewHeightInfo();
             sszpView.CalculateAttachSize();
@@ -479,7 +547,7 @@ public class PageController {
             return false;
         }*/
     }
-    boolean NeedUpdateNextGroup(int scaleOffsetY) {
+    boolean NeedUpdateNextGroup(int scaleOffsetY, int scaleSSPZViewHeight) {
         //  tail
         if (scrollGroup == GROUP_TAIL) {
             //  只要滑到 tail 就一定要更新
@@ -487,7 +555,7 @@ public class PageController {
         }
         //  最後一頁的判斷必須使用全高 - tail.Height - 視窗高
         return (scaleOffsetY >= viewHeightInfos[viewHeightInfos.length - 2]) ||
-                (scaleOffsetY >= (viewHeightInfos[viewHeightInfos.length - 1] - sszpView.GetHeight()));
+                (scaleOffsetY >= (viewHeightInfos[viewHeightInfos.length - 1] - scaleSSPZViewHeight));
     }
     /*
         使用當前的 scroll Group + Page + Offset 設定 SSZPView 的 offsetY
@@ -550,5 +618,17 @@ public class PageController {
             inserted = false;
             pages = null;
         }
+        void Debug(String name) {
+            if(!Valid()) {
+                Log.d(PC_TAG, name + "Group is invalid");
+                return;
+            }
+            Log.d(PC_TAG,
+                    name + "Group, pos = " + position.chapter + "-" + position.page +
+                            ", size = " + size);
+        }
+    }
+    void DebugScrollInfo() {
+        Log.d(PC_TAG,"Scroll = " + scrollGroup + "/" + scrollPage + "/" + scrollOffset);
     }
 }

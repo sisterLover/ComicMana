@@ -25,7 +25,7 @@ import mio.sis.com.comicmana.sui.HintText;
  */
 
 public class SSZPView extends LinearLayout {
-    static final int STANDARD_FACTOR = 2;
+    static final int STANDARD_FACTOR = 1;
 
     Context context;
     ScaleGestureDetector scaleGestureDetector;
@@ -70,10 +70,10 @@ public class SSZPView extends LinearLayout {
         scaleGestureDetector = new ScaleGestureDetector(context, scaleListener);
         setOnTouchListener(new InnerTouchListener(scaleGestureDetector, scaleListener));
 
-        /*attachView = new LinearLayout(context);
+        attachView = new LinearLayout(context);
         attachView.setOrientation(VERTICAL);
-        */
-        attachView = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.scroll_test, null);
+
+        //attachView = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.scroll_test, null);
         CalculateAttachSize();
 
         addView(attachView);
@@ -126,6 +126,7 @@ public class SSZPView extends LinearLayout {
         Log.d("SSZ_TAG", "Scroll " + offsetX + ", " + offsetY);
         if(pageController.ScrollAvailable()) {
             pageController.UpdateScrollInfo(offsetY);
+            pageController.DebugScrollInfo();
             pageController.CheckScroll();
             pageController.UpdatePageHint(HintText.STANDARD_HINT);
         }
@@ -168,6 +169,7 @@ public class SSZPView extends LinearLayout {
     @Override
     protected void dispatchDraw(Canvas canvas) {
         //Log.d("SSZ_TAG", "onDraw");
+        BoundOffset();
         canvas.translate(-offsetX, -offsetY);
         canvas.scale(zoomFactor, zoomFactor);
         //matrix.postTranslate(offsetX, offsetY);
@@ -192,41 +194,46 @@ public class SSZPView extends LinearLayout {
 
         if(!DefaultPageCache.ParamAbailable()) {
             DefaultPageCache.SetParams(context, GetStandardWidth(), GetStandardHeight());
-            ImageView imageView = new ImageView(context);
-            Bitmap bitmap = DefaultPageCache.GetTestComic(1);
-            imageView.setImageBitmap(bitmap);
-            imageView.setLayoutParams(new LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-            ));
-            attachView.addView(imageView);
 
-            bitmap = Bitmap.createBitmap(DefaultPageCache.GetWidth(), DefaultPageCache.GetHeight(),
-                    Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);
-            DefaultPageCache.DrawError(canvas);
-            imageView = new ImageView(context);
-            imageView.setImageBitmap(bitmap);
-            imageView.setLayoutParams(new LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-            ));
-            attachView.addView(imageView);
-
-            bitmap = Bitmap.createBitmap(DefaultPageCache.GetWidth(), DefaultPageCache.GetHeight(),
-                    Bitmap.Config.ARGB_8888);
-            canvas = new Canvas(bitmap);
-            DefaultPageCache.DrawPercent(canvas, 3, 67);
-            imageView = new ImageView(context);
-            imageView.setImageBitmap(bitmap);
-            imageView.setLayoutParams(new LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-            ));
-            attachView.addView(imageView);
-            CalculateAttachSize();
+            //InsertTestPage();
         }
         Log.d("SSZ_TAG", "size = " + width + ", " + height);
+    }
+
+    void InsertTestPage() {
+        ImageView imageView = new ImageView(context);
+        Bitmap bitmap = DefaultPageCache.GetTestComic(1, 1);
+        imageView.setImageBitmap(bitmap);
+        imageView.setLayoutParams(new LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        attachView.addView(imageView);
+
+        bitmap = Bitmap.createBitmap(DefaultPageCache.GetWidth(), DefaultPageCache.GetHeight(),
+                Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        DefaultPageCache.DrawError(canvas);
+        imageView = new ImageView(context);
+        imageView.setImageBitmap(bitmap);
+        imageView.setLayoutParams(new LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        attachView.addView(imageView);
+
+        bitmap = Bitmap.createBitmap(DefaultPageCache.GetWidth(), DefaultPageCache.GetHeight(),
+                Bitmap.Config.ARGB_8888);
+        canvas = new Canvas(bitmap);
+        DefaultPageCache.DrawPercent(canvas, 3, 67);
+        imageView = new ImageView(context);
+        imageView.setImageBitmap(bitmap);
+        imageView.setLayoutParams(new LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        attachView.addView(imageView);
+        CalculateAttachSize();
     }
 
     class PostComicInfoRunnable implements Runnable {
@@ -246,8 +253,8 @@ public class SSZPView extends LinearLayout {
     }
 
     class InnerScaleListener implements ScaleGestureDetector.OnScaleGestureListener {
-        //static final float MAX_FACTOR = 1.0f, MIN_FACTOR = 1/((float)STANDARD_WIDTH_FACTOR), INI_FACTOR = MIN_FACTOR;
-        static final float MAX_FACTOR = 3.0f, MIN_FACTOR = 0.5f, INI_FACTOR = 1.0f;
+        static final float MAX_FACTOR = 2.0f, MIN_FACTOR = 1/((float)STANDARD_FACTOR), INI_FACTOR = MIN_FACTOR;
+        //static final float MAX_FACTOR = 3.0f, MIN_FACTOR = 0.5f, INI_FACTOR = 1.0f;
         float scaleFactor/*, centerX, centerY*/;
         boolean scaling;
 

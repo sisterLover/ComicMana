@@ -15,6 +15,8 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.ArrayList;
 
+import mio.sis.com.comicmana.sdata.ComicInfo;
+import mio.sis.com.comicmana.sdata.ComicPosition;
 import mio.sis.com.comicmana.sfile.SFile;
 import mio.sis.com.comicmana.sui.PathSelector;
 import mio.sis.com.comicmana.sui.PathSelectorListener;
@@ -60,7 +62,7 @@ public class ExploreActivity extends AppCompatActivity {
             selector.SetCurrentPath(sd_card.getAbsolutePath());
         }
         else {
-            SFile.RequestPermission(this);
+            //SFile.RequestPermission(this);
         }
         linearLayout.addView(selector.GetView());
 
@@ -84,6 +86,11 @@ public class ExploreActivity extends AppCompatActivity {
         );
         sszpView.setOrientation(LinearLayout.VERTICAL);
         linearLayout.addView(sszpView);
+
+        ComicPosition position = new ComicPosition();
+        position.chapter = 1;
+        position.page = 1;
+        sszpView.PostComicInfo(ComicInfo.GetTestComicInfo(), position);
         /*LayoutInflater inflater = LayoutInflater.from(this);
         sszpView.SetChild(inflater.inflate(R.layout.scroll_test, null));*/
     }
