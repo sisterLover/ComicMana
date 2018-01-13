@@ -31,9 +31,8 @@ public class SImagePage extends View {
         }
     }
     /*
-        SImgPage 是 UI 控件，負責顯示一頁漫畫，SImgPage 是 ImgViewer 的其中一頁
+        SImgPage 是 UI 控件，負責顯示一頁漫畫，SImgPage 是 SSZPView 的其中一頁
         ImgPage 有以下狀態
-        當使用者正在觀看的區域離當前頁面很遠時，ImgViewer 會呼叫 Out 來提醒 SImgPage 此頁面不需要重新渲染
      */
     static final int SIP_WAIT = 0,     //  圖片未讀入
             SIP_READY = 2,      //  圖片已載入

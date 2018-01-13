@@ -21,7 +21,7 @@ public class ComicInfo {
        */
     public Bitmap thumbnail;   //  縮圖
 
-    public STime updateTime, lastOpenTime;
+    public STime lastOpenTime;  //  上次開啟時間
 
     public ComicInfo() {
         src = new ComicSrc();

@@ -2,9 +2,10 @@ package mio.sis.com.comicmana.scache;
 
 import android.graphics.Bitmap;
 
+import java.util.concurrent.Semaphore;
+
 import mio.sis.com.comicmana.sdata.ComicPosition;
 import mio.sis.com.comicmana.sdata.ComicSrc;
-import mio.sis.com.comicmana.snet.NetImageHelper;
 import mio.sis.com.comicmana.snet.TestComicImageHelper;
 import mio.sis.com.comicmana.snet.TestComicImageHelperCallback;
 import mio.sis.com.comicmana.sui.SImagePage;
@@ -18,7 +19,10 @@ public class ImageCache {
         ImageCache 負責在記憶體-SD卡-網路三者之間存取圖片
      */
     static TestComicImageHelper testComicImageHelper = new TestComicImageHelper();
-
+    static Semaphore semaphore = new Semaphore(1);
+    static void Lock() throws InterruptedException { semaphore.acquire(); }
+    static void Unlock() { semaphore.release(); }
+    static MemoryCache memoryCache = new MemoryCache();
 
 
     /*

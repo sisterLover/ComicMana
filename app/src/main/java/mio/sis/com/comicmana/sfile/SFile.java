@@ -19,13 +19,28 @@ import java.util.ArrayList;
  */
 
 public class SFile {
+    /*
+        whether string is null or not, something will be write to stream
+        null string is treat as a length 0 string(string = "")
+     */
     static public void WriteStringToStream(String string, DataOutputStream stream) throws IOException {
-        byte[] data = string.getBytes();
-        stream.write(data.length);
-        stream.write(data);
+        if(string != null) {
+            byte[] data = string.getBytes();
+            stream.writeInt(data.length);
+            stream.write(data);
+        }
+        else {
+            stream.writeInt(0);
+        }
     }
+    /*
+        whether string is null or not, a non-null string will be return
+        null string is return as a length 0 string(string = "")
+     */
     static public String ReadStringFromStream(DataInputStream stream) throws IOException {
-        byte[] data = new byte[stream.readInt()];
+        int string_length = stream.readInt();
+        if(string_length == 0) return "";
+        byte[] data = new byte[string_length];
         stream.read(data);
         return new String(data);
     }
@@ -46,6 +61,10 @@ public class SFile {
 
         File[] files = base.listFiles();
         for(File file : files) {
+            if(file.toString().contains("ext_sd")) {
+                //  this path cannot use in HTC M9u
+                continue;
+            }
             if(file.exists()) {
                 try {
                     if (Environment.isExternalStorageRemovable(file)) {
@@ -72,5 +91,22 @@ public class SFile {
                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 REQUEST_CODE);
         //  need overload onRequestPermissionsResult with request code = REQUEST_CODE
+    }
+    /*
+        取得 File 的副檔名
+     */
+    static public String GetExtension(File file) {
+        if (file.isDirectory()) return null;
+        String string = file.getName();
+        int start_pos = string.lastIndexOf('.');
+        if (start_pos == -1) return null;
+        if (start_pos == string.length() - 1) return null;
+        return string.substring(start_pos + 1);
+    }
+    static public String GetNameWithoutExtension(File file) {
+        String string = file.getName();
+        int dot_pos = string.lastIndexOf('.');
+        if(dot_pos==-1) return string;
+        return string.substring(0, dot_pos);
     }
 }

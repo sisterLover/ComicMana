@@ -37,7 +37,11 @@ public class ExploreActivity extends AppCompatActivity {
         ArrayList<File> arrayList = SFile.GetSDCardDirs();
         String s = "";
         for(File file : arrayList) {
+            if(file.toString().contains("ext_sd")) {
+                Log.d("SD_TAG", "kill " + file.toString());
+            }
             s+=file.toString();
+            Log.d("SD_TAG", s);
             s+="\n";
         }
         sd_card = arrayList.get(0);

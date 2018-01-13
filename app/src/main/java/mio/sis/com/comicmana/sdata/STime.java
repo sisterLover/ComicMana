@@ -1,13 +1,18 @@
 package mio.sis.com.comicmana.sdata;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import mio.sis.com.comicmana.sfile.ReadWritable;
 
 /**
  * Created by Administrator on 2017/12/26.
  */
 
-public class STime {
+public class STime implements ReadWritable {
     //  data
     public int year, month, day, hour, minute, second;
 
@@ -28,5 +33,25 @@ public class STime {
         hour = calendar.get(GregorianCalendar.HOUR_OF_DAY);
         minute = calendar.get(GregorianCalendar.MINUTE);
         second = calendar.get(GregorianCalendar.SECOND);
+    }
+
+    @Override
+    public void WriteStream(DataOutputStream stream) throws IOException {
+        stream.writeInt(year);
+        stream.writeInt(month);
+        stream.writeInt(day);
+        stream.writeInt(hour);
+        stream.writeInt(minute);
+        stream.writeInt(second);
+    }
+
+    @Override
+    public void ReadStream(DataInputStream stream) throws IOException {
+        year = stream.readInt();
+        month = stream.readInt();
+        day = stream.readInt();
+        hour = stream.readInt();
+        minute = stream.readInt();
+        second = stream.readInt();
     }
 }

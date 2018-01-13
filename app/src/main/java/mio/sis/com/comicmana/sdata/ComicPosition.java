@@ -1,10 +1,16 @@
 package mio.sis.com.comicmana.sdata;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
+import mio.sis.com.comicmana.sfile.ReadWritable;
+
 /**
  * Created by Administrator on 2017/12/26.
  */
 
-public class ComicPosition {
+public class ComicPosition implements ReadWritable {
     /*
         ComicPosition 描述一個漫畫頁面
         也就是給定 ComicSrc 和 ComicPosition 後，即可唯一定位出一頁漫畫
@@ -30,5 +36,17 @@ public class ComicPosition {
     public void Copy(ComicPosition position) {
         chapter = position.chapter;
         page = position.page;
+    }
+
+    @Override
+    public void WriteStream(DataOutputStream stream) throws IOException {
+        stream.writeInt(chapter);
+        stream.writeInt(page);
+    }
+
+    @Override
+    public void ReadStream(DataInputStream stream) throws IOException {
+        chapter = stream.readInt();
+        page = stream.readInt();
     }
 }

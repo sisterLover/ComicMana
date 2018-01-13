@@ -4,35 +4,27 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import mio.sis.com.comicmana.sfile.ReadWritable;
 import mio.sis.com.comicmana.sfile.SFile;
 
 /**
- * Created by Administrator on 2017/12/24.
+ * Created by Administrator on 2018/1/13.
+ * 儲存漫畫訊息的檔案，儲存於 [comic directory]/mana.cfg 中
  */
 
-public class ComicConfig {
-    /*
-        description for comic page
-     */
-    public String thumbnail;
-    public int chapter, page;
-    /*
-        章節, 頁數
-        only when chapter is 1, page is valid
+public class ComicConfig implements ReadWritable {
+    public String name;
+    public STime lastOpenTime;
 
-        for ST_NET_EX, chapter always be 1
-    */
-
-    //  funtion
-    void ReadFromFile(DataInputStream stream) throws IOException {
-        thumbnail = SFile.ReadStringFromStream(stream);
-        chapter = stream.readInt();
-        page = stream.readInt();
+    @Override
+    public void WriteStream(DataOutputStream stream) throws IOException {
+        SFile.WriteStringToStream(name, stream);
+        lastOpenTime.WriteStream(stream);
     }
-    void WriteFromFile(DataOutputStream stream) throws IOException {
-        if(thumbnail==null) thumbnail = new String("");
-        SFile.WriteStringToStream(thumbnail, stream);
-        stream.writeInt(chapter);
-        stream.writeInt(page);
+
+    @Override
+    public void ReadStream(DataInputStream stream) throws IOException {
+        name = SFile.ReadStringFromStream(stream);
+        lastOpenTime.ReadStream(stream);
     }
 }

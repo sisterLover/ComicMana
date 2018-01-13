@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -25,11 +26,15 @@ import mio.sis.com.comicmana.sui.HintText;
  */
 
 public class SSZPView extends LinearLayout {
-    static final int STANDARD_FACTOR = 1;
+    static final float STANDARD_FACTOR = 1.5f;
 
     Context context;
     ScaleGestureDetector scaleGestureDetector;
     InnerScaleListener scaleListener;
+    InnerTouchListener touchListener;
+    GestureDetector clickGestureDetector;
+    InnerClickGestureListener clickGestureListener;
+    SSZPViewClickListener sszpViewClickListener;
     int offsetX, offsetY,                       //  目前 scroll 狀態
             childWidth, childHeight,            //  attachView 原始大小
             scaleChildWidth, scaleChildHeight,  //  attachView 經過 zoomFactor 後的長寬
@@ -68,7 +73,13 @@ public class SSZPView extends LinearLayout {
 
         scaleListener = new InnerScaleListener();
         scaleGestureDetector = new ScaleGestureDetector(context, scaleListener);
-        setOnTouchListener(new InnerTouchListener(scaleGestureDetector, scaleListener));
+
+        clickGestureListener = new InnerClickGestureListener();
+        clickGestureDetector = new GestureDetector(context, clickGestureListener);
+        sszpViewClickListener = null;
+
+        touchListener = new InnerTouchListener();
+        setOnTouchListener(touchListener);
 
         attachView = new LinearLayout(context);
         attachView.setOrientation(VERTICAL);
@@ -80,6 +91,8 @@ public class SSZPView extends LinearLayout {
 
         pageController = new PageController(context, this);
     }
+
+    @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         return true;
     }
@@ -139,6 +152,10 @@ public class SSZPView extends LinearLayout {
     public void SetOffsetX(int offsetX) { this.offsetX = offsetX; }
     public void SetOffsetY(int offsetY) { this.offsetY = offsetY; }
 
+    public void SetClickListener(SSZPViewClickListener clickListener) {
+        sszpViewClickListener = clickListener;
+    }
+
     void BoundOffset() {
         if(offsetX+width>scaleChildWidth) offsetX = scaleChildWidth - width;
         //  有可能 childWidth - width < 0，所以 < 0 放在後面判斷
@@ -182,9 +199,9 @@ public class SSZPView extends LinearLayout {
     public int GetWidth() { return width; }
     public int GetHeight() { return height; }
     public int GetStandardWidth() {
-        return width*STANDARD_FACTOR;
+        return (int)(width*STANDARD_FACTOR);
     }
-    public int GetStandardHeight() { return height*STANDARD_FACTOR; }
+    public int GetStandardHeight() { return (int)(height*STANDARD_FACTOR); }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -236,12 +253,12 @@ public class SSZPView extends LinearLayout {
         CalculateAttachSize();
     }
 
-    class PostComicInfoRunnable implements Runnable {
+    private class PostComicInfoRunnable implements Runnable {
         SSZPView sszpView;
         ComicInfo comicInfo;
         ComicPosition comicPosition;
 
-        public PostComicInfoRunnable(SSZPView sszpView, ComicInfo comicInfo, ComicPosition comicPosition) {
+        PostComicInfoRunnable(SSZPView sszpView, ComicInfo comicInfo, ComicPosition comicPosition) {
             this.sszpView = sszpView;
             this.comicInfo = comicInfo;
             this.comicPosition = comicPosition;
@@ -252,17 +269,17 @@ public class SSZPView extends LinearLayout {
         }
     }
 
-    class InnerScaleListener implements ScaleGestureDetector.OnScaleGestureListener {
-        static final float MAX_FACTOR = 2.0f, MIN_FACTOR = 1/((float)STANDARD_FACTOR), INI_FACTOR = MIN_FACTOR;
+    private class InnerScaleListener implements ScaleGestureDetector.OnScaleGestureListener {
+        static final float MAX_FACTOR = 2/STANDARD_FACTOR, MIN_FACTOR = 1/STANDARD_FACTOR, INI_FACTOR = MIN_FACTOR;
         //static final float MAX_FACTOR = 3.0f, MIN_FACTOR = 0.5f, INI_FACTOR = 1.0f;
         float scaleFactor/*, centerX, centerY*/;
         boolean scaling;
 
-        public InnerScaleListener() {
+        InnerScaleListener() {
             scaleFactor = INI_FACTOR;
             scaling = false;
         }
-        public boolean IsScaling() {
+        boolean IsScaling() {
             return scaling;
         }
 
@@ -290,16 +307,23 @@ public class SSZPView extends LinearLayout {
         }
     }
 
-    class InnerTouchListener implements OnTouchListener {
+    private class InnerClickGestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            Log.d("SSV_TAG", "click");
+            if (sszpViewClickListener != null) {
+                sszpViewClickListener.OnClick((int) e.getX(), (int) e.getY(), GetWidth(), GetHeight());
+            }
+            return true;
+        }
+    }
+
+    private class InnerTouchListener implements OnTouchListener {
         boolean lastValid;
         int scaleCount;
         float lastX, lastY;
-        ScaleGestureDetector detector;
-        InnerScaleListener listener;
 
-        public InnerTouchListener(ScaleGestureDetector detector, InnerScaleListener listener) {
-            this.detector = detector;
-            this.listener = listener;
+        InnerTouchListener() {
             lastValid = false;
             scaleCount = 0;
         }
@@ -307,9 +331,11 @@ public class SSZPView extends LinearLayout {
         @Override
         public boolean onTouch(View view, MotionEvent ev) {
             float curX, curY;
-            boolean scaling = listener.IsScaling();
+            boolean scaling = scaleListener.IsScaling();
+            //  scaling 必須使用上次的結果
 
-            detector.onTouchEvent(ev);
+            clickGestureDetector.onTouchEvent(ev);
+            scaleGestureDetector.onTouchEvent(ev);
             if(scaling) {
                 scaleCount = 10;
             }
