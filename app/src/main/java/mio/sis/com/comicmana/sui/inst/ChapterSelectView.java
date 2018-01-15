@@ -9,10 +9,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.File;
+
 import mio.sis.com.comicmana.R;
+import mio.sis.com.comicmana.other.SChar;
 import mio.sis.com.comicmana.sdata.ComicInfo;
 import mio.sis.com.comicmana.sdata.ComicPosition;
 import mio.sis.com.comicmana.sdata.ComicSrc;
+import mio.sis.com.comicmana.sfile.LocalStorage;
+import mio.sis.com.comicmana.sfile.SFile;
 import mio.sis.com.comicmana.sui.intf.StackableView;
 
 /**
@@ -58,6 +63,12 @@ public class ChapterSelectView implements StackableView {
         else {
             beginButton.setText("繼續閱讀");
         }
+        beginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                OnBeginClick();
+            }
+        });
         //  chapter
         root.post(new Runnable() {
             @Override
@@ -75,6 +86,18 @@ public class ChapterSelectView implements StackableView {
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
             encryptButton.setLayoutParams(params);
             decryptButton.setLayoutParams(params);
+            encryptButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    OnEncryptClick();
+                }
+            });
+            decryptButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    OnDecryptClick();
+                }
+            });
             optionParent.addView(encryptButton);
             optionParent.addView(decryptButton);
         }
@@ -84,6 +107,12 @@ public class ChapterSelectView implements StackableView {
             LinearLayout.LayoutParams params =
                     new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
             downloadButton.setLayoutParams(params);
+            downloadButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    OnDownloadClick();
+                }
+            });
             optionParent.addView(downloadButton);
         }
         return root;
@@ -95,7 +124,7 @@ public class ChapterSelectView implements StackableView {
     /*
         產生 chapterIndex 的 chapter button
      */
-    private LinearLayout GenerateSingleLine(Context context, int[] chapterIndex) {
+    private LinearLayout GenerateSingleLine(Context context, String[] chapterTitle, int[] chapterIndex) {
         LinearLayout lineParent = new LinearLayout(context);
         LinearLayout.LayoutParams parentParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT),
@@ -103,10 +132,11 @@ public class ChapterSelectView implements StackableView {
         lineParent.setOrientation(LinearLayout.HORIZONTAL);
         lineParent.setLayoutParams(parentParams);
 
-        for (int i = 0; i < chapterIndex.length; ++i) {
+        for (int i = 0; i < chapterTitle.length; ++i) {
             Button chapterButton = new Button(context);
-            chapterButton.setText(String.valueOf(chapterIndex[i]));
+            chapterButton.setText(chapterTitle[i]);
             chapterButton.setLayoutParams(buttonParams);
+            chapterButton.setOnClickListener(new ChapterButtonListener(chapterIndex[i]));
             lineParent.addView(chapterButton);
         }
         return lineParent;
@@ -121,14 +151,46 @@ public class ChapterSelectView implements StackableView {
     }
 
     private void OnEncryptClick() {
+        if(comicInfo.src.srcType != ComicSrc.SrcType.ST_LOCAL_FILE) return;
+        SFile.EnumFile(new File(comicInfo.src.path), 2, new EncryptCallback());
 
+    }
+    private class EncryptCallback implements SFile.EnumFileCallback {
+        @Override
+        public void OnFile(File file) {
+            String ext = SFile.GetExtension(file);
+            if (ext == null) return;
+            if (SChar.StringInListIgnoreCase(ext, LocalStorage.SUPPORT_EXTENSION)) {
+                if (ext.compareToIgnoreCase(LocalStorage.APP_ALTER_EXTENSION) != 0) {
+                    String title = SFile.GetNameWithoutExtension(file);
+                    //  失敗我也不能怎樣
+                    file.renameTo(new File(file.getParentFile(), title + "/" + LocalStorage.APP_ALTER_EXTENSION));
+                }
+            }
+        }
     }
 
     private void OnDecryptClick() {
+        if(comicInfo.src.srcType != ComicSrc.SrcType.ST_LOCAL_FILE) return;
 
+    }
+    private class DecryptCallback implements SFile.EnumFileCallback {
+        @Override
+        public void OnFile(File file) {
+            String ext = SFile.GetExtension(file);
+            if (ext == null) return;
+            if (SChar.StringInListIgnoreCase(ext, LocalStorage.SUPPORT_EXTENSION)) {
+                if (ext.compareToIgnoreCase(LocalStorage.APP_ALTER_EXTENSION) == 0) {
+                    String title = SFile.GetNameWithoutExtension(file);
+                    //  失敗我也不能怎樣
+                    file.renameTo(new File(file.getParentFile(), title + "/" + LocalStorage.APP_ALTER_EXTENSION));
+                }
+            }
+        }
     }
 
     private void OnDownloadClick() {
+        if(comicInfo.src.srcType == ComicSrc.SrcType.ST_LOCAL_FILE) return;
 
     }
 

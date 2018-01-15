@@ -109,4 +109,21 @@ public class SFile {
         if(dot_pos==-1) return string;
         return string.substring(0, dot_pos);
     }
+
+    static public void EnumFile(File directory, int maxLevel, EnumFileCallback callback) {
+        EnumFileInner(directory, 1, maxLevel, callback);
+    }
+    static private void EnumFileInner(File directory, int level, int maxLevel, EnumFileCallback callback) {
+        File[] childs = directory.listFiles();
+        for(File file : childs) {
+            callback.OnFile(file);
+            if (level < maxLevel && file.isDirectory()) {
+                EnumFileInner(file, level + 1, maxLevel, callback);
+            }
+        }
+    }
+
+    public interface EnumFileCallback {
+        void OnFile(File file);
+    }
 }

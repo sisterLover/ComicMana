@@ -47,8 +47,8 @@ public class LocalStorage {
     static final String COMIC_THUMBNAIL_FILE = "thumbnail";
     static final String COMIC_CONFIG_FILE = "comic.cfg";
 
-    static final String APP_ALTER_EXTENSION = "cmp";    //  comic mana picture
-    static final String[] SUPPORT_EXTENSION = {"png" , "jpg", "jpeg", APP_ALTER_EXTENSION};
+    static public final String APP_ALTER_EXTENSION = "cmp";    //  comic mana picture
+    static public final String[] SUPPORT_EXTENSION = {"png" , "jpg", "jpeg", APP_ALTER_EXTENSION};
 
     static private final int
             COMIC_DIR_NOT_DIR = 0,      //  表示此路徑下並不是漫畫
