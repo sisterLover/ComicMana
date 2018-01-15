@@ -1,4 +1,4 @@
-package mio.sis.com.comicmana.sui;
+package mio.sis.com.comicmana.sui.comp;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -13,7 +13,7 @@ import mio.sis.com.comicmana.scache.DefaultPageCache;
 import mio.sis.com.comicmana.scache.ImageCache;
 import mio.sis.com.comicmana.sdata.ComicPosition;
 import mio.sis.com.comicmana.sdata.ComicSrc;
-import mio.sis.com.comicmana.sui.sszpview.SSZPView;
+import mio.sis.com.comicmana.sui.comp.sszpview.SSZPView;
 
 /**
  * Created by Administrator on 2017/12/26.

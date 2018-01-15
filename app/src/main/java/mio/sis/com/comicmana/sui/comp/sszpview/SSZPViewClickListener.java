@@ -1,4 +1,4 @@
-package mio.sis.com.comicmana.sui.sszpview;
+package mio.sis.com.comicmana.sui.comp.sszpview;
 
 /**
  * Created by Administrator on 2018/1/13.

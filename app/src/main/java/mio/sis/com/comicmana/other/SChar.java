@@ -13,9 +13,9 @@ public class SChar {
      */
     static public int GetNumber(char[] chars) {
         int result = 0;
-        for(int i=0;i<chars.length;++i) {
-            if(chars[i]<'0' || chars[i]>'9') return -1;
-            result = result*10 + (chars[i]-'0');
+        for (int i = 0; i < chars.length; ++i) {
+            if (chars[i] < '0' || chars[i] > '9') return -1;
+            result = result * 10 + (chars[i] - '0');
         }
         return result;
     }
@@ -32,8 +32,8 @@ public class SChar {
     static public ArrayList<Integer> ParseIntList(char[] chars) {
         ArrayList<Integer> result = new ArrayList<>();
         int state = 0, cur = 0;
-        for(int i=0;i<chars.length;++i) {
-            if(chars[i]>='0' && chars[i]<='9') {
+        for (int i = 0; i < chars.length; ++i) {
+            if (chars[i] >= '0' && chars[i] <= '9') {
                 switch (state) {
                     case 0:
                         cur = chars[i] - '0';
@@ -43,8 +43,7 @@ public class SChar {
                         cur = cur * 10 + chars[i] - '0';
                         break;
                 }
-            }
-            else {
+            } else {
                 switch (state) {
                     case 0:
                         break;
@@ -55,9 +54,15 @@ public class SChar {
                 }
             }
         }
-        if(state == 1) {
+        if (state == 1) {
             result.add(cur);
         }
         return result;
+    }
+    static public boolean StringInListIgnoreCase(String string, String[] list) {
+        for(String listString : list) {
+            if(string.compareToIgnoreCase(listString)==0) return true;
+        }
+        return false;
     }
 }

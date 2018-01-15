@@ -11,6 +11,7 @@ import mio.sis.com.comicmana.sfile.ReadWritable;
  */
 
 public class ComicPosition implements ReadWritable {
+    static public int CHAPTER_NOT_READ_YET = -1;    //  chapter = -1 表示從沒讀過這本漫畫
     /*
         ComicPosition 描述一個漫畫頁面
         也就是給定 ComicSrc 和 ComicPosition 後，即可唯一定位出一頁漫畫

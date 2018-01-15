@@ -33,7 +33,7 @@ public class LocalStorage {
                      |----thunbnail.png/thumbnail.cmp [optional]
                      或是
                     [Directory Name]
-                     |----chapter directory(s) [名稱是全數字]
+                     |----chapter directory(s) [以字典序決定 chpater 順序]
                      |    |----picture file(s)
                      |----mana.cfg [optional]
                      |----thunbnail.png/thumbnail.cmp [optional]
@@ -50,7 +50,7 @@ public class LocalStorage {
     static final String APP_ALTER_EXTENSION = "cmp";    //  comic mana picture
     static final String[] SUPPORT_EXTENSION = {"png" , "jpg", "jpeg", APP_ALTER_EXTENSION};
 
-    static final int
+    static private final int
             COMIC_DIR_NOT_DIR = 0,      //  表示此路徑下並不是漫畫
             COMIC_DIR_SINGLE = 1,       //  表示此 comic directory 只有一章節，且圖片檔案直接放在目錄下
             COMIC_DIR_MULTIPLE = 2;     //  表示此 comic directory 可以含有多章節，每章節圖片放在 chapter directory 裡
@@ -116,6 +116,7 @@ public class LocalStorage {
 
             comicInfo.name = comicConfig.name;
             comicInfo.lastOpenTime = comicConfig.lastOpenTime;
+            comicInfo.lastPosition = comicConfig.lastPosition;
             dataInputStream.close();
             fileInputStream.close();
         }
@@ -127,14 +128,14 @@ public class LocalStorage {
          */
         switch(GetComicDirectoryType(childs)) {
             case COMIC_DIR_SINGLE:
-                comicInfo.chapterCnt = 1;
-                comicInfo.chapterPages = new int[2];
+                comicInfo.AllocateChapter(1);
                 //  計算目錄底下有多少張圖片
-                comicInfo.chapterPages[1] = CountPicture(comicInfo, childs);
-                if(comicInfo.chapterPages[1]==0) {
+                comicInfo.chapterInfo[1].pageCnt = CountPicture(comicInfo, childs);
+                comicInfo.chapterInfo[1].title = "1";
+                if(comicInfo.chapterInfo[1].pageCnt==0) {
                     //  理論上要成為 COMIC_DIR_SINGLE 就一定有圖片，此區段理論上永遠不執行
                     comicInfo.chapterCnt = 0;
-                    comicInfo.chapterPages = null;
+                    comicInfo.chapterInfo = null;
                 }
                 break;
             case COMIC_DIR_MULTIPLE: {
@@ -143,23 +144,26 @@ public class LocalStorage {
                 for (File file : childs) {
                     if (file.isDirectory()) {
                         PageCountPair pair = new PageCountPair();
-                        pair.chapter = SChar.GetNumber(file.toString().toCharArray());
-                        if (pair.chapter >= 0) {
-                            pair.pageCnt = CountPicture(comicInfo, file.listFiles());
-                            if (pair.pageCnt > 0) {
-                                pages.add(pair);
-                            }
+                        pair.path = file.getName();
+                        pair.pageCnt = CountPicture(comicInfo, file.listFiles());
+                        if (pair.pageCnt > 0) {
+                            pages.add(pair);
                         }
                     }
                 }
                 Collections.sort(pages);
-                comicInfo.chapterCnt = pages.size();
-                comicInfo.chapterPages = new int[comicInfo.chapterCnt];
-                for(int i=0;i<comicInfo.chapterCnt;++i) {
-                    comicInfo.chapterPages[i+1] = pages.get(i).pageCnt;
+                if(pages.size() > 0) {
+                    comicInfo.AllocateChapter(pages.size());
+
+                    ComicInfo.ChapterInfo chapterInfo;
+                    for (int i = 0; i < comicInfo.chapterCnt; ++i) {
+                        chapterInfo = comicInfo.chapterInfo[i + 1];
+                        chapterInfo.pageCnt = pages.get(i).pageCnt;
+                        chapterInfo.title = chapterInfo.path = pages.get(i).path;
+                    }
+                    //  載入縮圖(如果存在的話)
+                    CountPicture(comicInfo, childs);
                 }
-                //  載入縮圖(如果存在的話)
-                CountPicture(comicInfo, childs);
                 break;
             }
             case COMIC_DIR_NOT_DIR:
@@ -177,14 +181,11 @@ public class LocalStorage {
             if(file.isDirectory()) continue;
             String ext = SFile.GetExtension(file);
             if(ext == null) continue;
-            for(String allow_ext : SUPPORT_EXTENSION) {
-                if (ext.compareToIgnoreCase(allow_ext) == 0) {
-                    if(SFile.GetNameWithoutExtension(file).compareToIgnoreCase(COMIC_THUMBNAIL_FILE) ==0) {
-                        //  讀入縮圖
-                    }
-                    else {
-                        ++result;
-                    }
+            if(SChar.StringInListIgnoreCase(ext, SUPPORT_EXTENSION)) {
+                if (SFile.GetNameWithoutExtension(file).compareToIgnoreCase(COMIC_THUMBNAIL_FILE) == 0) {
+                    //  讀入縮圖
+                } else {
+                    ++result;
                 }
             }
         }
@@ -229,23 +230,20 @@ public class LocalStorage {
     static private int GetComicDirectoryType(File[] childs) {
         for(File file : childs) {
             if(file.isDirectory()) {
-                //  檢查目錄名稱是否全為數字
-                char[] name = file.getName().toCharArray();
-                //  目錄名稱全為數字，表示這是支援多章節的 comic directory
-                if(SChar.GetNumber(name)>=0) return COMIC_DIR_MULTIPLE;
+                //  子資料夾
+                if (GetComicDirectoryType(file.listFiles()) == COMIC_DIR_SINGLE)
+                    return COMIC_DIR_MULTIPLE;
             }
             else {
                 String ext = SFile.GetExtension(file);
                 if(ext == null) continue;
-                for(String allow_ext : SUPPORT_EXTENSION) {
-                    if(ext.compareToIgnoreCase(allow_ext)==0) {
-                        //  找到圖片副檔名，要確認是否為縮圖
-                        if(SFile.GetNameWithoutExtension(file).compareToIgnoreCase(COMIC_THUMBNAIL_FILE)==0) {
-                            break;
-                        }
-                        //  找到非縮圖的圖片，表示這是圖片直接放在 comic directory 的漫畫
-                        return COMIC_DIR_SINGLE;
+                if(SChar.StringInListIgnoreCase(ext, SUPPORT_EXTENSION)) {
+                    //  找到圖片副檔名，要確認是否為縮圖
+                    if (SFile.GetNameWithoutExtension(file).compareToIgnoreCase(COMIC_THUMBNAIL_FILE) == 0) {
+                        break;
                     }
+                    //  找到非縮圖的圖片，表示這是圖片直接放在 comic directory 的漫畫
+                    return COMIC_DIR_SINGLE;
                 }
             }
         }
@@ -267,13 +265,25 @@ public class LocalStorage {
         return null;
     }
     static class PageCountPair implements Comparable<PageCountPair> {
-        public int chapter, pageCnt;
+        public int pageCnt;
+        public String path;
 
+        /*
+            如果兩者皆為純數字，則進行數字比較
+            用來使
+            1.png 2.png 3.png ... 99.png 可以和
+            01.png 02.png 03.png ... 99.png 一樣正確排列
+         */
         @Override
         public int compareTo(@NonNull PageCountPair pageCountPair) {
-            if(chapter < pageCountPair.chapter) return -1;
-            if(chapter > pageCountPair.chapter) return 1;
-            return 0;
+            int num1 = SChar.GetNumber(path.toCharArray()),
+                    num2 = SChar.GetNumber(pageCountPair.path.toCharArray());
+            if(num1 != -1 && num2 != -1) {
+                if(num1 < num2) return -1;
+                if(num1 > num2) return 1;
+                return 0;
+            }
+            return path.compareToIgnoreCase(pageCountPair.path);
         }
     }
 }

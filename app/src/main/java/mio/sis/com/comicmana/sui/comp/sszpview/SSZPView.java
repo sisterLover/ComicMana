@@ -1,4 +1,4 @@
-package mio.sis.com.comicmana.sui.sszpview;
+package mio.sis.com.comicmana.sui.comp.sszpview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -15,11 +14,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import mio.sis.com.comicmana.R;
 import mio.sis.com.comicmana.scache.DefaultPageCache;
 import mio.sis.com.comicmana.sdata.ComicInfo;
 import mio.sis.com.comicmana.sdata.ComicPosition;
-import mio.sis.com.comicmana.sui.HintText;
+import mio.sis.com.comicmana.sui.comp.HintText;
 
 /**
  * Created by Administrator on 2017/12/27.

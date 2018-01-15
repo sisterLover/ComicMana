@@ -8,7 +8,7 @@ import mio.sis.com.comicmana.sdata.ComicPosition;
 import mio.sis.com.comicmana.sdata.ComicSrc;
 import mio.sis.com.comicmana.snet.TestComicImageHelper;
 import mio.sis.com.comicmana.snet.TestComicImageHelperCallback;
-import mio.sis.com.comicmana.sui.SImagePage;
+import mio.sis.com.comicmana.sui.comp.SImagePage;
 
 /**
  * Created by Administrator on 2017/12/26.

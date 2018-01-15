@@ -14,17 +14,20 @@ import mio.sis.com.comicmana.sfile.SFile;
 
 public class ComicConfig implements ReadWritable {
     public String name;
+    public ComicPosition lastPosition;
     public STime lastOpenTime;
 
     @Override
     public void WriteStream(DataOutputStream stream) throws IOException {
         SFile.WriteStringToStream(name, stream);
+        lastPosition.WriteStream(stream);
         lastOpenTime.WriteStream(stream);
     }
 
     @Override
     public void ReadStream(DataInputStream stream) throws IOException {
         name = SFile.ReadStringFromStream(stream);
+        lastPosition.ReadStream(stream);
         lastOpenTime.ReadStream(stream);
     }
 }

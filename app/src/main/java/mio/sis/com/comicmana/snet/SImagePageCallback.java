@@ -2,7 +2,7 @@ package mio.sis.com.comicmana.snet;
 
 import android.graphics.Bitmap;
 
-import mio.sis.com.comicmana.sui.SImagePage;
+import mio.sis.com.comicmana.sui.comp.SImagePage;
 
 /**
  * Created by Administrator on 2017/12/28.

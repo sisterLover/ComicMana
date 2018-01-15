@@ -1,4 +1,4 @@
-package mio.sis.com.comicmana.sui;
+package mio.sis.com.comicmana.sui.comp;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
