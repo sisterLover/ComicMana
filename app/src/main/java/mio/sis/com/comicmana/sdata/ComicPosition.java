@@ -19,6 +19,9 @@ public class ComicPosition implements ReadWritable {
      */
     public int chapter, page;
 
+    public ComicPosition() {
+        chapter = CHAPTER_NOT_READ_YET;
+    }
     /*
         if this > position => return 1
            this < position => return -1

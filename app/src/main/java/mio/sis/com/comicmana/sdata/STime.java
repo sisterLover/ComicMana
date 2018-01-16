@@ -34,6 +34,10 @@ public class STime implements ReadWritable {
         minute = calendar.get(GregorianCalendar.MINUTE);
         second = calendar.get(GregorianCalendar.SECOND);
     }
+    public void GetCurrentTime() {
+        GregorianCalendar gregorianCalendar = new GregorianCalendar();
+        SetFromCalendar(gregorianCalendar);
+    }
 
     @Override
     public void WriteStream(DataOutputStream stream) throws IOException {

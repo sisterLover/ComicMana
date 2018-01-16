@@ -134,7 +134,7 @@ public class MemoryCache {
         return result;
     }
     Bitmap ScaleBitmap(Bitmap bitmap) {
-        if(!DefaultPageCache.ParamAbailable()) return null;
+        if(!DefaultPageCache.ParamAvailable()) return null;
         int width = DefaultPageCache.GetWidth(), height;
         height = bitmap.getHeight()*width/bitmap.getWidth();
         Bitmap result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);

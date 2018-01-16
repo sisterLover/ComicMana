@@ -50,7 +50,7 @@
             android:id="@+id/scroll_test_layout"
             android:layout_width="match_parent"
             android:layout_height="0pt"
-            android:layout_weight="1"
+            android:layout_weight="9"
             android:orientation="vertical"
             android:visibility="visible"></LinearLayout>
         <LinearLayout
@@ -61,15 +61,5 @@
 
         </LinearLayout>
     </LinearLayout>
-    <mio.sis.com.comicmana.sui.comp.HintText
-        android:id="@+id/hint_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/colorHintBackground"
-        android:textColor="@color/colorHintText"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:textSize="22sp"
-        android:text="hint" />
 
 </android.support.constraint.ConstraintLayout>

@@ -375,37 +375,9 @@ public class PageController {
      */
     public void UpdatePageHint(HintText hintText) {
         //DebugScrollInfo();
-        int chapter = 0, page = 0, totalPage = 0;
-        if (scrollGroup == GROUP_HEAD) {
-            //  first page
-            if (lastGroup.inserted) {
-                chapter = lastGroup.position.chapter;
-                page = lastGroup.position.page;
-            } else {
-                chapter = currentGroup.position.chapter;
-                page = currentGroup.position.page;
-            }
-        } else if (scrollGroup == GROUP_LAST) {
-            chapter = lastGroup.position.chapter;
-            page = lastGroup.position.page + scrollPage - 1;
-        } else if (scrollGroup == GROUP_CURRENT) {
-            chapter = currentGroup.position.chapter;
-            page = currentGroup.position.page + scrollPage - 1;
-        } else if (scrollGroup == GROUP_NEXT) {
-            chapter = nextGroup.position.chapter;
-            page = nextGroup.position.page + scrollPage - 1;
-        } else {
-            //  last page
-            if (nextGroup.inserted) {
-                chapter = nextGroup.position.chapter;
-                page = nextGroup.position.page + nextGroup.size - 1;
-            } else {
-                chapter = currentGroup.position.chapter;
-                page = currentGroup.position.page + currentGroup.size - 1;
-            }
-        }
-        totalPage = comicInfo.GetChapterPageCnt(chapter);
-        hintText.UpdateText("CH" + chapter + "  " + page + "/" + totalPage);
+        ComicPosition position = GetCurrentPosition();
+        int totalPage = comicInfo.GetChapterPageCnt(position.chapter);
+        hintText.UpdateText("CH" + position.chapter + "  " + position.page + "/" + totalPage);
     }
     /*
         檢查目前 scroll 狀態是否需要更改 pageGroup
@@ -574,6 +546,42 @@ public class PageController {
         baseIndex += (scrollPage - 1);
         sszpView.SetOffsetY((int) ((viewHeightInfos[baseIndex] + scrollOffset) * sszpView.GetZoomFactor()));
         sszpView.invalidate();
+    }
+    public ComicPosition GetCurrentPosition() {
+        ComicPosition result = new ComicPosition();
+        if(scrollGroup == GROUP_HEAD) {
+            if(lastGroup.inserted) {
+                result.chapter = lastGroup.position.chapter;
+                result.page = lastGroup.position.page;
+            }
+            else {
+                result.chapter = currentGroup.position.chapter;
+                result.page = currentGroup.position.page;
+            }
+        }
+        else if(scrollGroup == GROUP_TAIL) {
+            if(nextGroup.inserted) {
+                result.chapter = nextGroup.position.chapter;
+                result.page = nextGroup.position.page + nextGroup.size - 1;
+            }
+            else {
+                result.chapter = currentGroup.position.chapter;
+                result.page = currentGroup.position.page + currentGroup.size - 1;
+            }
+        }
+        else if(scrollGroup == GROUP_LAST) {
+            result.chapter = lastGroup.position.chapter;
+            result.page = lastGroup.position.page + scrollPage - 1;
+        }
+        else if(scrollGroup == GROUP_NEXT) {
+            result.chapter = nextGroup.position.chapter;
+            result.page = nextGroup.position.page + scrollPage - 1;
+        }
+        else if(scrollGroup == GROUP_CURRENT) {
+            result.chapter = currentGroup.position.chapter;
+            result.page = currentGroup.position.page + scrollPage - 1;
+        }
+        return result;
     }
 
     private class GroupInfo {

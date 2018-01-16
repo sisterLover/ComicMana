@@ -200,6 +200,7 @@ public class SSZPView extends LinearLayout {
         return (int)(width*STANDARD_FACTOR);
     }
     public int GetStandardHeight() { return (int)(height*STANDARD_FACTOR); }
+    public ComicPosition GetCurrentPosition() { return pageController.GetCurrentPosition(); }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -207,7 +208,7 @@ public class SSZPView extends LinearLayout {
         width = w;
         height = h;
 
-        if(!DefaultPageCache.ParamAbailable()) {
+        if(!DefaultPageCache.ParamAvailable()) {
             DefaultPageCache.SetParams(context, GetStandardWidth(), GetStandardHeight());
 
             //InsertTestPage();

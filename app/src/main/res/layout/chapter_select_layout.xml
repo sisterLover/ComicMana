@@ -3,6 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <!--
+    android:background="@color/manaUIBaseBackground"
+    -->
 
     <ScrollView
         android:layout_width="match_parent"
@@ -11,7 +14,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
+            <!--
+            android:background="@color/manaUIBaseBackground"
+            -->
 
             <ImageView
                 android:id="@+id/chapter_select_thumbnail_view"
@@ -23,13 +29,28 @@
                 android:id="@+id/chapter_select_title_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textSize="24sp"
                 android:text="TextView" />
+            <!--
+                android:textColor="@color/manaUIBaseTextColor"
+            -->
 
             <Button
                 android:id="@+id/chapter_select_begin_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="begin_button" />
+            <!--android:background="@drawable/mana_ui_button_border_background"
+            android:textColor="@color/manaBtnBaseTextColor"-->
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="章節訊息" />
+            <!--
+                android:textColor="@color/manaUIBaseTextColor"
+            -->
 
             <LinearLayout
                 android:id="@+id/chapter_select_chapter_grid_parent"

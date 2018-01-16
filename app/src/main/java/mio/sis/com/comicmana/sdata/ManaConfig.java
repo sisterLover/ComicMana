@@ -3,9 +3,12 @@ package mio.sis.com.comicmana.sdata;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import mio.sis.com.comicmana.sfile.LocalStorage;
 import mio.sis.com.comicmana.sfile.ReadWritable;
 import mio.sis.com.comicmana.sfile.SFile;
 
@@ -23,7 +26,32 @@ public class ManaConfig implements ReadWritable {
         containterDirs = new ArrayList<>();
     }
     public void LoadConfig() {
+        try {
+            File configFile = LocalStorage.GetConfigFile();
+            if (configFile != null) {
+                FileInputStream fileInputStream = new FileInputStream(configFile);
+                DataInputStream dataInputStream = new DataInputStream(fileInputStream);
+                ReadStream(dataInputStream);
+                dataInputStream.close();
+                fileInputStream.close();
+            }
+        } catch (Exception e) {
 
+        }
+    }
+    public void SaveConfig() {
+        try {
+            File configFile = LocalStorage.GetConfigFile();
+            if (configFile != null) {
+                FileOutputStream fileOutputStream = new FileOutputStream(configFile);
+                DataOutputStream dataOutputStream = new DataOutputStream(fileOutputStream);
+                WriteStream(dataOutputStream);
+                dataOutputStream.close();
+                fileOutputStream.close();
+            }
+        } catch (Exception e) {
+
+        }
     }
 
     @Override

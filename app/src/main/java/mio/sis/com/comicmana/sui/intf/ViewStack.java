@@ -1,6 +1,8 @@
 package mio.sis.com.comicmana.sui.intf;
 
 import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
@@ -39,6 +41,8 @@ public class ViewStack {
     }
     private void InflateLastView() {
         StackableView lastView = stack.get(stack.size() - 1);
-        parentLayout.addView(lastView.InflateView(context));
+        View view = lastView.InflateView(context);
+        view.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        parentLayout.addView(view);
     }
 }

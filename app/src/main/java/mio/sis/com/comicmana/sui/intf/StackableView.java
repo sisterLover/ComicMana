@@ -13,5 +13,5 @@ public interface StackableView {
      */
     View InflateView(Context context);
     View GetView();
-    View FreeView();
+    void FreeView();
 }

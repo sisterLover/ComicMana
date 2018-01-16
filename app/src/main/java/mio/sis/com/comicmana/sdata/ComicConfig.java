@@ -27,7 +27,9 @@ public class ComicConfig implements ReadWritable {
     @Override
     public void ReadStream(DataInputStream stream) throws IOException {
         name = SFile.ReadStringFromStream(stream);
+        lastPosition = new ComicPosition();
         lastPosition.ReadStream(stream);
+        lastOpenTime = new STime();
         lastOpenTime.ReadStream(stream);
     }
 }

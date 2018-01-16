@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.RectF;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 /**

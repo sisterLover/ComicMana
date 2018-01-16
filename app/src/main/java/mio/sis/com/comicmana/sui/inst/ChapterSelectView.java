@@ -1,6 +1,8 @@
 package mio.sis.com.comicmana.sui.inst;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +15,14 @@ import java.io.File;
 
 import mio.sis.com.comicmana.R;
 import mio.sis.com.comicmana.other.SChar;
+import mio.sis.com.comicmana.scache.DefaultPageCache;
 import mio.sis.com.comicmana.sdata.ComicInfo;
 import mio.sis.com.comicmana.sdata.ComicPosition;
 import mio.sis.com.comicmana.sdata.ComicSrc;
 import mio.sis.com.comicmana.sfile.LocalStorage;
 import mio.sis.com.comicmana.sfile.SFile;
 import mio.sis.com.comicmana.sui.intf.StackableView;
+import mio.sis.com.comicmana.sui.intf.ViewStack;
 
 /**
  * Created by Administrator on 2018/1/14.
@@ -38,10 +42,15 @@ public class ChapterSelectView implements StackableView {
             |  comic option |       若是本地端漫畫，提供"從媒體櫃中隱藏、顯示"選項
             -----------------       網路端漫畫，則提供"下載"選項
      */
-    LinearLayout root, chapterParent, optionParent;
-    ComicInfo comicInfo;
-    public ChapterSelectView(ComicInfo comicInfo) {
+    private ViewStack viewStack;
+    private LinearLayout root, chapterParent, optionParent;
+    private ComicInfo comicInfo;
+    private boolean encrypting, decrypting;     //  目前是否正在從媒體櫃中隱藏/顯示
+    public ChapterSelectView(ViewStack viewStack, ComicInfo comicInfo) {
+        this.viewStack = viewStack;
         this.comicInfo = comicInfo;
+        encrypting = false;
+        decrypting = false;
     }
 
     @Override
@@ -49,9 +58,22 @@ public class ChapterSelectView implements StackableView {
         LayoutInflater inflater = LayoutInflater.from(context);
         root = (LinearLayout) inflater.inflate(R.layout.chapter_select_layout, null);
 
+        final ImageView thumbnailView = root.findViewById(R.id.chapter_select_thumbnail_view);
         if(comicInfo.thumbnail != null) {
-            ImageView thumbnailView = root.findViewById(R.id.chapter_select_thumbnail_view);
-            thumbnailView.setImageBitmap(comicInfo.thumbnail);
+            root.post(new Runnable() {
+                @Override
+                public void run() {
+                    LoadThumbnail(thumbnailView, comicInfo.thumbnail);
+                }
+            });
+        }
+        else {
+            root.post(new Runnable() {
+                @Override
+                public void run() {
+                    LoadDefaultThumbnail(context, thumbnailView);
+                }
+            });
         }
         TextView titleView = root.findViewById(R.id.chapter_select_title_view);
         titleView.setText(comicInfo.name);
@@ -81,6 +103,10 @@ public class ChapterSelectView implements StackableView {
         optionParent = root.findViewById(R.id.chapter_select_option_parent);
         if(comicInfo.src.srcType == ComicSrc.SrcType.ST_LOCAL_FILE) {
             Button encryptButton = new Button(context), decryptButton = new Button(context);
+            //encryptButton.setBackgroundResource(R.drawable.mana_ui_button_border_background);
+            //decryptButton.setBackgroundResource(R.drawable.mana_ui_button_border_background);
+            //encryptButton.setTextColor(ContextCompat.getColor(context, R.color.manaBtnBaseTextColor));
+            //decryptButton.setTextColor(ContextCompat.getColor(context, R.color.manaBtnBaseTextColor));
             encryptButton.setText("媒體櫃隱藏");
             decryptButton.setText("媒體櫃顯示");
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
@@ -103,6 +129,8 @@ public class ChapterSelectView implements StackableView {
         }
         else {
             Button downloadButton = new Button(context);
+            //downloadButton.setBackgroundResource(R.drawable.mana_ui_button_border_background);
+            //downloadButton.setTextColor(ContextCompat.getColor(context, R.color.manaBtnBaseTextColor));
             downloadButton.setText("下載");
             LinearLayout.LayoutParams params =
                     new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
@@ -120,40 +148,105 @@ public class ChapterSelectView implements StackableView {
 
     private void GenerateChapter(Context context) {
         chapterParent = root.findViewById(R.id.chapter_select_chapter_grid_parent);
+
+        int fillIndex = 0;
+        String[] chapterTitle = new String[5];
+        int[] chapterIndex = new int[5];
+        for (int i = comicInfo.chapterCnt; i > 0; --i) {
+            chapterTitle[fillIndex] = comicInfo.chapterInfo[i].title;
+            chapterIndex[fillIndex] = i;
+            ++fillIndex;
+            if (fillIndex == 5) {
+                chapterParent.addView(GenerateSingleLine(context, chapterTitle, chapterIndex, 5));
+                fillIndex = 0;
+            }
+        }
+        if (fillIndex > 0) {
+            chapterParent.addView(GenerateSingleLine(context, chapterTitle, chapterIndex, fillIndex));
+        }
     }
     /*
         產生 chapterIndex 的 chapter button
      */
-    private LinearLayout GenerateSingleLine(Context context, String[] chapterTitle, int[] chapterIndex) {
+    private LinearLayout GenerateSingleLine(Context context, String[] chapterTitle, int[] chapterIndex, int length) {
         LinearLayout lineParent = new LinearLayout(context);
         LinearLayout.LayoutParams parentParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT),
-                buttonParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+                buttonParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1),
+                textParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1);
         lineParent.setOrientation(LinearLayout.HORIZONTAL);
         lineParent.setLayoutParams(parentParams);
 
-        for (int i = 0; i < chapterTitle.length; ++i) {
+        for (int i = 0; i < length; ++i) {
             Button chapterButton = new Button(context);
+            //chapterButton.setBackgroundResource(R.drawable.mana_ui_button_border_background);
+            //chapterButton.setTextColor(ContextCompat.getColor(context, R.color.manaBtnBaseTextColor));
             chapterButton.setText(chapterTitle[i]);
             chapterButton.setLayoutParams(buttonParams);
             chapterButton.setOnClickListener(new ChapterButtonListener(chapterIndex[i]));
             lineParent.addView(chapterButton);
         }
+        for(int i=0;i<5-length;++i) {
+            TextView emptyText = new TextView(context);
+            emptyText.setText("");
+            emptyText.setLayoutParams(textParams);
+            lineParent.addView(emptyText);
+        }
         return lineParent;
+    }
+    /*
+        must call after root have width and height
+     */
+    private int GetThumbnailHeight() {
+        return Math.min(root.getWidth(), root.getHeight()) / 3;
+    }
+
+    private void LoadDefaultThumbnail(Context context, ImageView imageView) {
+        int width = root.getWidth(), height = GetThumbnailHeight();
+        imageView.setLayoutParams(new LinearLayout.LayoutParams(width, height));
+        imageView.setImageBitmap(
+                DefaultPageCache.GetEmptyThumbnail(context, width, height));
+    }
+    private void LoadThumbnail(ImageView imageView, Bitmap bitmap) {
+        int width = root.getWidth(), height = GetThumbnailHeight();
+        imageView.setLayoutParams(new LinearLayout.LayoutParams(width, height));
+        imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        imageView.setImageBitmap(bitmap);
     }
 
     private void OnBeginClick() {
-
+        if(comicInfo.lastPosition.chapter == ComicPosition.CHAPTER_NOT_READ_YET) {
+            comicInfo.lastPosition.chapter = 1;
+            comicInfo.lastPosition.page = 1;
+        }
+        PushSSZPView();
     }
 
     private void OnChapterClick(int chapter) {
+        comicInfo.lastPosition.chapter = chapter;
+        comicInfo.lastPosition.page = 1;
+        PushSSZPView();
+    }
 
+    private void PushSSZPView() {
+        viewStack.Push(new ComicView(viewStack, comicInfo));
     }
 
     private void OnEncryptClick() {
         if(comicInfo.src.srcType != ComicSrc.SrcType.ST_LOCAL_FILE) return;
-        SFile.EnumFile(new File(comicInfo.src.path), 2, new EncryptCallback());
+        if(encrypting) return;
+        encrypting = true;
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    SFile.EnumFile(new File(comicInfo.src.path), 2, new EncryptCallback());
+                } catch (Exception e) {
 
+                }
+                encrypting = false;
+            }
+        }.start();
     }
     private class EncryptCallback implements SFile.EnumFileCallback {
         @Override
@@ -172,7 +265,19 @@ public class ChapterSelectView implements StackableView {
 
     private void OnDecryptClick() {
         if(comicInfo.src.srcType != ComicSrc.SrcType.ST_LOCAL_FILE) return;
+        if(decrypting) return;
+        decrypting = true;
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    SFile.EnumFile(new File(comicInfo.src.path), 2, new DecryptCallback());
+                } catch (Exception e) {
 
+                }
+                decrypting = false;
+            }
+        }.start();
     }
     private class DecryptCallback implements SFile.EnumFileCallback {
         @Override
@@ -200,8 +305,12 @@ public class ChapterSelectView implements StackableView {
     }
 
     @Override
-    public View FreeView() {
-        return null;
+    public void FreeView() {
+        chapterParent.removeAllViews();
+        chapterParent = null;
+        optionParent.removeAllViews();
+        optionParent = null;
+        root = null;
     }
 
     private class ChapterButtonListener implements View.OnClickListener {

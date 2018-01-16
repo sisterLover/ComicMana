@@ -14,12 +14,12 @@ import mio.sis.com.comicmana.R;
  */
 
 public class DefaultPageCache {
-    static int viewWidth, viewHeight;
-    static Bitmap percentPage = null, errorPage = null;
-    static Context context = null;
-    static boolean paramAvailable = false;
+    static private int viewWidth, viewHeight;
+    static private Bitmap percentPage = null, errorPage = null;
+    static private Context context = null;
+    static private boolean paramAvailable = false;
 
-    static public boolean ParamAbailable() { return paramAvailable; }
+    static public boolean ParamAvailable() { return paramAvailable; }
     static public int GetWidth() {
         return viewWidth;
     }
@@ -49,15 +49,15 @@ public class DefaultPageCache {
         GenErrorPage();
         canvas.drawBitmap(errorPage, 0, 0, null);
     }
-    static void GenPercentPage() {
+    static private void GenPercentPage() {
         if(percentPage != null) return;
         percentPage = GenPage(null);
     }
-    static void GenErrorPage() {
+    static private void GenErrorPage() {
         if(errorPage != null) return;
         errorPage = GenPage("讀取錯誤");
     }
-    static Bitmap GenPage(String string) {
+    static private Bitmap GenPage(String string) {
         Bitmap result = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.ARGB_8888);
 
         Canvas canvas = new Canvas(result);
@@ -76,7 +76,7 @@ public class DefaultPageCache {
 
         return result;
     }
-    static void DrawArc(Canvas canvas, int width, int height, int color, float begin, float sweep) {
+    static private void DrawArc(Canvas canvas, int width, int height, int color, float begin, float sweep) {
         Paint paint = new Paint();
 
         paint.setColor(color);
@@ -88,7 +88,7 @@ public class DefaultPageCache {
                 (width+arcWidth)/2, (height+arcWidth)/2,
                 begin, sweep, false, paint);
     }
-    static void DrawText(Canvas canvas, int width, int height, String text) {
+    static private void DrawText(Canvas canvas, int width, int height, String text) {
         Paint paint = new Paint();
 
         paint.setAntiAlias(true);
@@ -122,5 +122,20 @@ public class DefaultPageCache {
 
     static void Clear() {
         percentPage = errorPage = null;
+    }
+
+    static private Bitmap emptyThumbnail = null;
+    static public Bitmap GetEmptyThumbnail(Context context, int width, int height) {
+        if(emptyThumbnail != null &&
+                emptyThumbnail.getWidth() == width &&
+                emptyThumbnail.getHeight() == height) return emptyThumbnail;
+        emptyThumbnail = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(emptyThumbnail);
+        canvas.drawColor(ContextCompat.getColor(context, R.color.colorSSZPViewBackground));
+        if(DefaultPageCache.context == null) {
+            DefaultPageCache.context = context;
+        }
+        DrawText(canvas, width, height, "沒有縮圖唷");
+        return emptyThumbnail;
     }
 }

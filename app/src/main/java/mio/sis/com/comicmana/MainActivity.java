@@ -19,11 +19,14 @@ import mio.sis.com.comicmana.sfile.SFile;
 import mio.sis.com.comicmana.sui.comp.PathSelector;
 import mio.sis.com.comicmana.sui.comp.PathSelectorListener;
 import mio.sis.com.comicmana.sui.comp.sszpview.SSZPView;
+import mio.sis.com.comicmana.sui.inst.ChapterSelectView;
+import mio.sis.com.comicmana.sui.intf.ViewStack;
 
 public class MainActivity extends AppCompatActivity {
     PathSelector selector;
     PathSelectorListener selectorListener;
     TextView textView;
+    ViewStack viewStack;
 
     File sd_card;
     @Override
@@ -72,15 +75,9 @@ public class MainActivity extends AppCompatActivity {
 
         linearLayout = (LinearLayout)findViewById(R.id.scroll_test_layout);
 
-        /*sScrollView = new SScrollView(this);
-        sScrollView.setLayoutParams(
-                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        sScrollView.setOrientation(LinearLayout.VERTICAL);
-        linearLayout.addView(sScrollView);
-
-        LayoutInflater inflater = LayoutInflater.from(this);
-        sScrollView.GetAttachView().addView(inflater.inflate(R.layout.scroll_test, null));*/
-        SSZPView sszpView = new SSZPView(this);
+        viewStack = new ViewStack(this, linearLayout);
+        viewStack.Push(new ChapterSelectView(viewStack, ComicInfo.GetTestComicInfo()));
+        /*SSZPView sszpView = new SSZPView(this);
         sszpView.setLayoutParams(
                 new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
@@ -92,9 +89,7 @@ public class MainActivity extends AppCompatActivity {
         ComicPosition position = new ComicPosition();
         position.chapter = 1;
         position.page = 1;
-        sszpView.PostComicInfo(ComicInfo.GetTestComicInfo(), position);
-        /*LayoutInflater inflater = LayoutInflater.from(this);
-        sszpView.SetChild(inflater.inflate(R.layout.scroll_test, null));*/
+        sszpView.PostComicInfo(ComicInfo.GetTestComicInfo(), position);*/
     }
 
     @Override

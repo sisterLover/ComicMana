@@ -22,7 +22,6 @@ public class ConfigView implements StackableView {
     }
 
     @Override
-    public View FreeView() {
-        return null;
+    public void FreeView() {
     }
 }

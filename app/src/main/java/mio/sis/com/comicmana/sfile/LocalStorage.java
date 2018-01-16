@@ -38,7 +38,6 @@ public class LocalStorage {
                      |----mana.cfg [optional]
                      |----thunbnail.png/thumbnail.cmp [optional]
         5. chapter directory：存放特定章節的目錄，於 comic directory 底下
-                    名稱必須只有數字
         6. cache directory：存放漫畫快取的目錄
      */
     static final String APP_DIR = "ComicMana";
@@ -108,21 +107,7 @@ public class LocalStorage {
             讀取 ComicConfig
          */
         comicInfo.name = comicPath.getName();
-        try {
-            FileInputStream fileInputStream = new FileInputStream(GetComicConfigFile(comicPath));
-            DataInputStream dataInputStream = new DataInputStream(fileInputStream);
-            ComicConfig comicConfig = new ComicConfig();
-            comicConfig.ReadStream(dataInputStream);
-
-            comicInfo.name = comicConfig.name;
-            comicInfo.lastOpenTime = comicConfig.lastOpenTime;
-            comicInfo.lastPosition = comicConfig.lastPosition;
-            dataInputStream.close();
-            fileInputStream.close();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        comicInfo.TryReadComicConfig();
         /*
             填入 comicInfo
          */
@@ -209,19 +194,28 @@ public class LocalStorage {
         ScanComicDirectory 的內部調用函數
         檢查 dir 是否為 comic directory，是的話加入到 comicDirs 中
         不是的話將 dir 視為 container directory 遞迴下去
+
+        由於解除了 chapter directory 必須是數字名字的限制
+        因此包含 SINGLE comic directory 的 container directory 看起來與 MULTIPLE comic directory 一樣
+        因此 InnerScanContainerDirectory 不再提供遞迴搜尋功能
+        將傳入參數直接視為 constainer direcotry 而不檢查其 ComicDirectoryType
      */
     static private void InnerScanContainerDirectory(File dir, ArrayList<File> comicDirs) {
         if(!dir.exists() || !dir.isDirectory()) return;
         File[] childs = dir.listFiles();
-        int type = GetComicDirectoryType(childs);
+        /*int type = GetComicDirectoryType(childs);
         if(type == COMIC_DIR_SINGLE || type == COMIC_DIR_MULTIPLE) {
             comicDirs.add(dir);
             return;
-        }
+        }*/
         //  如果當前目錄不是 comic directory，就將當前目錄視為 container directory 遞迴下去
         for(File file : childs) {
             if(!file.isDirectory()) continue;
-            InnerScanContainerDirectory(file, comicDirs);
+            int type = GetComicDirectoryType(file.listFiles());
+            if(type == COMIC_DIR_SINGLE || type == COMIC_DIR_MULTIPLE) {
+                comicDirs.add(file);
+            }
+            //InnerScanContainerDirectory(file, comicDirs);
         }
     }
     /*
