@@ -7,6 +7,7 @@ import android.util.Log;
 
 import java.util.concurrent.Semaphore;
 
+import mio.sis.com.comicmana.image.ImageLib;
 import mio.sis.com.comicmana.sdata.ComicPosition;
 import mio.sis.com.comicmana.sdata.ComicSrc;
 
@@ -31,8 +32,8 @@ public class MemoryCache {
     CacheEntry[] entries = new CacheEntry[10];
     Semaphore cacheSemaphore = new Semaphore(1);
 
-    void Lock() throws InterruptedException { cacheSemaphore.acquire(); }
-    void Unlock() { cacheSemaphore.release(); }
+    private void Lock() throws InterruptedException { cacheSemaphore.acquire(); }
+    private void Unlock() { cacheSemaphore.release(); }
     public MemoryCache() {
         for(int i=0;i<CACHE_SIZE;++i) {
             entries[i] = new CacheEntry();
@@ -52,7 +53,7 @@ public class MemoryCache {
                 entries[i].bitmap = null;
             }
             Unlock();
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
             Log.d("IC_TAG", "Clear interrupted, BAD NEWS");
         }
     }
@@ -96,7 +97,7 @@ public class MemoryCache {
 
             Unlock();
         }
-        catch (Exception e) {
+        catch (InterruptedException e) {
         }
         return bitmap;
     }
@@ -129,23 +130,14 @@ public class MemoryCache {
                 result = entries[index].bitmap;
             }
             Unlock();
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
         }
         return result;
     }
-    Bitmap ScaleBitmap(Bitmap bitmap) {
+    private Bitmap ScaleBitmap(Bitmap bitmap) {
         if(!DefaultPageCache.ParamAvailable()) return null;
         int width = DefaultPageCache.GetWidth(), height;
         height = bitmap.getHeight()*width/bitmap.getWidth();
-        Bitmap result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(result);
-        Rect src = new Rect(), dst = new Rect();
-        src.left = src.top = dst.left = dst.top = 0;
-        src.right = bitmap.getWidth();
-        src.bottom = bitmap.getHeight();
-        dst.right = width;
-        dst.bottom = height;
-        canvas.drawBitmap(bitmap, src, dst, null);
-        return result;
+        return ImageLib.Scale(bitmap, width, height);
     }
 }

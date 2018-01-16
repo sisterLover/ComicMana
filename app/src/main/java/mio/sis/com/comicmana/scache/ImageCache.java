@@ -6,6 +6,7 @@ import java.util.concurrent.Semaphore;
 
 import mio.sis.com.comicmana.sdata.ComicPosition;
 import mio.sis.com.comicmana.sdata.ComicSrc;
+import mio.sis.com.comicmana.snet.NetImageHelper;
 import mio.sis.com.comicmana.snet.TestComicImageHelper;
 import mio.sis.com.comicmana.snet.TestComicImageHelperCallback;
 import mio.sis.com.comicmana.sui.comp.SImagePage;
@@ -42,5 +43,12 @@ public class ImageCache {
      */
     static public void CacheBitmap(ComicSrc src, ComicPosition position, Bitmap bitmap) {
 
+    }
+
+    static class ImageCacheImageHelper implements NetImageHelper {
+        @Override
+        public void GetComicPage(ComicSrc src, ComicPosition position, ComicPageCallback callback) {
+
+        }
     }
 }

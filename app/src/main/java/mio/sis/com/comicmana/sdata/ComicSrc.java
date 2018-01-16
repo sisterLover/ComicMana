@@ -28,7 +28,11 @@ public class ComicSrc implements ReadWritable {
             path = SD card path(absolute)
          */
 
-        ST_NET_EX = 100;
+        ST_NET_EX = 100,
+        /*
+            path = URL
+         */
+        ST_NET_WNACG = 101;
         /*
             path = URL
          */
