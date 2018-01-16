@@ -31,6 +31,7 @@ public interface AbstractComicGrid {
     /*
         Comic Grid 需要有以下建構子
         comicSrc 指明了此 Grid 中的漫畫是源自何種漫畫來源
+        有了此資訊 Grid 即可直接使用 ComicInfoCache.EnumComic 裡提供的
      */
     //AbstractComicGrid(ComicSrc comicSrc);
     /*
@@ -50,6 +51,11 @@ public interface AbstractComicGrid {
         設定動作 callback
      */
     void SetActionCallback(ActionCallback actionCallback);
+    /*
+        設定漫畫搜尋關鍵字
+        當 string = null 時，表示取消搜尋
+     */
+    void SetSearch(String string);
 
     interface ActionCallback {
         /*
