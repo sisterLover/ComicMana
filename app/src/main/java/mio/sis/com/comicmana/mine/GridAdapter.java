@@ -25,7 +25,7 @@ public class GridAdapter extends BaseAdapter {
     private ComicInfo[] comicInfo;
     final private int col=3;
     final private int row=4;
-    final int viewfactor=8;
+    final int viewfactor=7;
     final int imagefactor=6;
     private int width;
     private int height;
@@ -33,7 +33,6 @@ public class GridAdapter extends BaseAdapter {
     {
         public ImageView image;
         public TextView title;
-        public TextView pages;
     }
     public GridAdapter( ComicInfo[] comicInfo, Context context)
     {
@@ -83,18 +82,26 @@ public class GridAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
             viewHolder.title = (TextView) convertView.findViewById(R.id.grid_text);
             viewHolder.image = (ImageView) convertView.findViewById(R.id.grid_image);
-            viewHolder.pages=(TextView)convertView.findViewById(R.id.grid_text1);
 
             int w=width/col;
             int h=height/row;
-            AbsListView.LayoutParams lp=new AbsListView.LayoutParams(w,(h*viewfactor)/10);
+            //AbsListView.LayoutParams lp=new AbsListView.LayoutParams(w,(h*viewfactor)/10);
+            AbsListView.LayoutParams lp=new AbsListView.LayoutParams(parent.getWidth()/3, parent.getHeight()/4);
             convertView.setLayoutParams(lp);
 
             ViewGroup.LayoutParams ps = viewHolder.image.getLayoutParams();
-            ps.width = w*imagefactor/10;
+            /*ps.width = w*imagefactor/10;
             ps.height = h*imagefactor/10;
+            */
+            /*ps.width = lp.width;
+            ps.height = lp.height - 15;
             viewHolder.image.setLayoutParams(ps);
 
+            ViewGroup.LayoutParams titleParams = viewHolder.title.getLayoutParams();
+            titleParams.width = ps.width;
+            titleParams.height = 15;
+            viewHolder.title.setLayoutParams(titleParams);
+            */
             convertView.setTag(viewHolder);
         } else
         {

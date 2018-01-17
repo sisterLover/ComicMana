@@ -2,9 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/manaUIBaseBackground">
     <!--
-    android:background="@color/manaUIBaseBackground"
     -->
 
     <ScrollView
@@ -14,9 +14,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:background="@color/manaUIBaseBackground">
             <!--
-            android:background="@color/manaUIBaseBackground"
             -->
 
             <ImageView
@@ -30,26 +30,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="24sp"
-                android:text="TextView" />
+                android:text="TextView"
+                android:textColor="@color/manaUIBaseTextColor"/>
             <!--
-                android:textColor="@color/manaUIBaseTextColor"
             -->
 
             <Button
                 android:id="@+id/chapter_select_begin_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="begin_button" />
-            <!--android:background="@drawable/mana_ui_button_border_background"
-            android:textColor="@color/manaBtnBaseTextColor"-->
+                android:text="begin_button"
+                android:background="@drawable/mana_ui_button_border_background"
+                android:textColor="@color/manaBtnBaseTextColor" />
+            <!--
+            -->
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
-                android:text="章節訊息" />
+                android:text="章節訊息"
+                android:textColor="@color/manaUIBaseTextColor"/>
             <!--
-                android:textColor="@color/manaUIBaseTextColor"
             -->
 
             <LinearLayout

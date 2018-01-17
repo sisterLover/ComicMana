@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/manaUIBaseBackground">
 
     <LinearLayout
-        android:id="@+id/main_view_search_parent"
+        android:id="@+id/main_view_top_bar_parent"
         android:layout_width="match_parent"
         android:layout_height="0pt"
         android:layout_weight="1"
@@ -14,7 +15,7 @@
         android:id="@+id/main_view_grid_parent"
         android:layout_width="match_parent"
         android:layout_height="0pt"
-        android:layout_weight="8"
+        android:layout_weight="10"
         android:orientation="vertical"></LinearLayout>
 
     <LinearLayout
@@ -28,6 +29,8 @@
             android:layout_width="0pt"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@drawable/mana_ui_base_border_background"
+            android:textColor="@color/manaUIBaseTextColor"
             android:text="最近瀏覽" />
 
         <Button
@@ -35,6 +38,8 @@
             android:layout_width="0pt"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@drawable/mana_ui_base_border_background"
+            android:textColor="@color/manaUIBaseTextColor"
             android:text="本地漫畫" />
 
         <Button
@@ -42,6 +47,8 @@
             android:layout_width="0pt"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@drawable/mana_ui_base_border_background"
+            android:textColor="@color/manaUIBaseTextColor"
             android:text="線上漫畫" />
     </LinearLayout>
 </LinearLayout>

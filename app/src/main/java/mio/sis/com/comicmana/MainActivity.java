@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,16 +23,13 @@ import mio.sis.com.comicmana.sui.intf.ViewStack;
 
 public class MainActivity extends AppCompatActivity {
     static public ManaConfig manaConfig = new ManaConfig();
-
-    PathSelector selector;
-    PathSelectorListener selectorListener;
-    TextView textView;
     ViewStack viewStack;
 
     File sd_card;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_layout);
 
         if(SFile.ChechPermission(this)) {
@@ -65,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode != SFile.REQUEST_CODE) return;
         if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            selector.SetCurrentPath(sd_card.getAbsolutePath());
             manaConfig.LoadConfig();
         }
         else {

@@ -16,6 +16,16 @@ public interface NetSiteHelper {
         忽略前面 startFrom 本，並窮舉 length 本後停止
      */
     void EnumComic(ComicSrc src, int startFrom, int length, EnumCallback callback);
+    /*
+        src.type 與 src.path 皆會是有效參數
+        回傳此 ComicSrc 是否直向有效的漫畫
+     */
+    //boolean IsComicAvailable(ComicSrc src);
+    /*
+        src.type 與 src.path 皆會是有效參數
+        回傳此 ComicSrc 的完整 ComicInfo
+     */
+    //ComicInfo RequestComicInfo(ComicSrc src);
 
     interface EnumCallback {
         /*

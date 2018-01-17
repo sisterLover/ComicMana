@@ -305,13 +305,17 @@ public class LocalStorage {
     }
     static public File GetDownloadDir() {
         UpdatePath();
-        if(pathAvailable) return new File(basePath, APP_DOWNLOAD_DIR);
-        return null;
+        if(!pathAvailable) return null;
+        File dir = new File(basePath, APP_DOWNLOAD_DIR);
+        if(!dir.exists()) dir.mkdirs();
+        return dir;
     }
     static public File GetCacheDir() {
         UpdatePath();
-        if(pathAvailable) return new File(basePath, APP_CACHE_DIR);
-        return null;
+        if(!pathAvailable) return null;
+        File dir = new File(basePath, APP_CACHE_DIR);
+        if(!dir.exists()) dir.mkdirs();
+        return dir;
     }
     static class PageCountPair implements Comparable<PageCountPair> {
         public int pageCnt;

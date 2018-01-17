@@ -8,23 +8,16 @@
     <ImageView
         android:id="@+id/grid_image"
         android:layout_width="match_parent"
-        android:layout_height="420dp"
+        android:layout_height="0pt"
+        android:layout_weight="8"
         android:layout_marginTop="5pt"
         android:background="@mipmap/ic_launcher"></ImageView>
 
     <TextView
         android:id="@+id/grid_text"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:paddingBottom="15px"
-        android:paddingTop="15px"
-        android:textSize="9pt"></TextView>
-
-    <TextView
-        android:id="@+id/grid_text1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0pt"
+        android:layout_weight="1"
         android:gravity="center"
         android:paddingBottom="15px"
         android:paddingTop="15px"

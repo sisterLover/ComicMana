@@ -4,13 +4,13 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="manaUIBaseBackground">#0F0F0F</color>
-    <color name="manaUIBaseTextColor">#F0F0F0</color>
-    <color name="manaUIBaseBorderColor">#707070</color>
+    <color name="manaUIBaseBackground">#4F4F4F</color>
+    <color name="manaUIBaseTextColor">#C0C0C0</color>
+    <color name="manaUIBaseBorderColor">#808080</color>
 
-    <color name="manaBtnBaseBackground">#707070</color>
+    <color name="manaBtnBaseBackground">#C0C0C0</color>
     <color name="manaBtnBaseTextColor">#0F0F0F</color>
-    <color name="manaBtnBaseBorderColor">#F0F0F0</color>
+    <color name="manaBtnBaseBorderColor">#808080</color>
 
     <color name="colorPathSelectorBackground">#0F0F0F</color>
     <color name="colorPathSelectorText">#F0F0F0</color>

@@ -12,8 +12,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 import mio.sis.com.comicmana.R;
+import mio.sis.com.comicmana.image.ImageLib;
 import mio.sis.com.comicmana.other.SChar;
 import mio.sis.com.comicmana.scache.DefaultPageCache;
 import mio.sis.com.comicmana.sdata.ComicInfo;
@@ -103,10 +106,10 @@ public class ChapterSelectView implements StackableView {
         optionParent = root.findViewById(R.id.chapter_select_option_parent);
         if(comicInfo.src.srcType == ComicSrc.SrcType.ST_LOCAL_FILE) {
             Button encryptButton = new Button(context), decryptButton = new Button(context);
-            //encryptButton.setBackgroundResource(R.drawable.mana_ui_button_border_background);
-            //decryptButton.setBackgroundResource(R.drawable.mana_ui_button_border_background);
-            //encryptButton.setTextColor(ContextCompat.getColor(context, R.color.manaBtnBaseTextColor));
-            //decryptButton.setTextColor(ContextCompat.getColor(context, R.color.manaBtnBaseTextColor));
+            encryptButton.setBackgroundResource(R.drawable.mana_ui_button_border_background);
+            decryptButton.setBackgroundResource(R.drawable.mana_ui_button_border_background);
+            encryptButton.setTextColor(ContextCompat.getColor(context, R.color.manaBtnBaseTextColor));
+            decryptButton.setTextColor(ContextCompat.getColor(context, R.color.manaBtnBaseTextColor));
             encryptButton.setText("媒體櫃隱藏");
             decryptButton.setText("媒體櫃顯示");
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
@@ -129,8 +132,8 @@ public class ChapterSelectView implements StackableView {
         }
         else {
             Button downloadButton = new Button(context);
-            //downloadButton.setBackgroundResource(R.drawable.mana_ui_button_border_background);
-            //downloadButton.setTextColor(ContextCompat.getColor(context, R.color.manaBtnBaseTextColor));
+            downloadButton.setBackgroundResource(R.drawable.mana_ui_button_border_background);
+            downloadButton.setTextColor(ContextCompat.getColor(context, R.color.manaBtnBaseTextColor));
             downloadButton.setText("下載");
             LinearLayout.LayoutParams params =
                     new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
@@ -179,8 +182,8 @@ public class ChapterSelectView implements StackableView {
 
         for (int i = 0; i < length; ++i) {
             Button chapterButton = new Button(context);
-            //chapterButton.setBackgroundResource(R.drawable.mana_ui_button_border_background);
-            //chapterButton.setTextColor(ContextCompat.getColor(context, R.color.manaBtnBaseTextColor));
+            chapterButton.setBackgroundResource(R.drawable.mana_ui_button_border_background);
+            chapterButton.setTextColor(ContextCompat.getColor(context, R.color.manaBtnBaseTextColor));
             chapterButton.setText(chapterTitle[i]);
             chapterButton.setLayoutParams(buttonParams);
             chapterButton.setOnClickListener(new ChapterButtonListener(chapterIndex[i]));
@@ -251,6 +254,7 @@ public class ChapterSelectView implements StackableView {
     private class EncryptCallback implements SFile.EnumFileCallback {
         @Override
         public void OnFile(File file) {
+            if(!file.exists()) return;
             String ext = SFile.GetExtension(file);
             if (ext == null) return;
             if (SChar.StringInListIgnoreCase(ext, LocalStorage.SUPPORT_EXTENSION)) {
@@ -282,13 +286,16 @@ public class ChapterSelectView implements StackableView {
     private class DecryptCallback implements SFile.EnumFileCallback {
         @Override
         public void OnFile(File file) {
+            if(!file.exists()) return;
             String ext = SFile.GetExtension(file);
             if (ext == null) return;
-            if (SChar.StringInListIgnoreCase(ext, LocalStorage.SUPPORT_EXTENSION)) {
-                if (ext.compareToIgnoreCase(LocalStorage.APP_ALTER_EXTENSION) == 0) {
-                    String title = SFile.GetNameWithoutExtension(file);
-                    //  失敗我也不能怎樣
-                    file.renameTo(new File(file.getParentFile(), title + "/" + LocalStorage.APP_ALTER_EXTENSION));
+            if (ext.compareToIgnoreCase(LocalStorage.APP_ALTER_EXTENSION) == 0) {
+                String title = SFile.GetNameWithoutExtension(file);
+                Bitmap bitmap = ImageLib.LoadFile(file);
+                if (bitmap == null) return;
+                File orgFile = new File(file.getParentFile(), title + ".png");
+                if (ImageLib.SaveFile(orgFile, bitmap)) {
+                    file.delete();
                 }
             }
         }

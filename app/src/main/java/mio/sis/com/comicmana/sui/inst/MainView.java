@@ -1,6 +1,7 @@
 package mio.sis.com.comicmana.sui.inst;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +29,9 @@ public class MainView implements StackableView {
 
     private Context context;
     private ViewStack viewStack;
-    private LinearLayout root, grid_parent;
+    private LinearLayout root, grid_parent, top_bar_parent;
     private int currentState;
+    private Button historyButton, localButton, netButton;
 
     public MainView(ViewStack viewStack) {
         this.viewStack = viewStack;
@@ -38,15 +40,17 @@ public class MainView implements StackableView {
 
     @Override
     public View InflateView(Context context) {
+        this.context = context;
+
         LayoutInflater inflater = LayoutInflater.from(context);
         root = (LinearLayout) inflater.inflate(R.layout.main_view_layout, null);
 
+        top_bar_parent = root.findViewById(R.id.main_view_top_bar_parent);
+
         grid_parent = root.findViewById(R.id.main_view_grid_parent);
 
-        this.context = context;
-        InflateCurrentView();
-
-        root.findViewById(R.id.main_view_history_button).setOnClickListener(
+        historyButton =  root.findViewById(R.id.main_view_history_button);
+        historyButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -54,7 +58,8 @@ public class MainView implements StackableView {
                     }
                 }
         );
-        root.findViewById(R.id.main_view_local_button).setOnClickListener(
+        localButton = root.findViewById(R.id.main_view_local_button);
+        localButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -62,7 +67,8 @@ public class MainView implements StackableView {
                     }
                 }
         );
-        root.findViewById(R.id.main_view_net_button).setOnClickListener(
+        netButton = root.findViewById(R.id.main_view_net_button);
+        netButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -70,6 +76,7 @@ public class MainView implements StackableView {
                     }
                 }
         );
+        InflateCurrentView();
 
         return root;
     }
@@ -89,7 +96,9 @@ public class MainView implements StackableView {
 
     private void InflateCurrentView() {
         if (currentState == STATE_INI) {
-
+            ResetButton(historyButton);
+            ResetButton(localButton);
+            ResetButton(netButton);
             return;
         }
         TextView textView = new TextView(context);
@@ -101,14 +110,26 @@ public class MainView implements StackableView {
             case STATE_HISTORY:
                 textView.setText("最近瀏覽");
                 comicSrc.srcType = ComicSrc.SrcType.ST_HISTORY;
+
+                HighLightButton(historyButton);
+                ResetButton(localButton);
+                ResetButton(netButton);
                 break;
             case STATE_LOCAL:
                 textView.setText("本地漫畫");
                 comicSrc.srcType = ComicSrc.SrcType.ST_LOCAL_FILE;
+
+                ResetButton(historyButton);
+                HighLightButton(localButton);
+                ResetButton(netButton);
                 break;
             case STATE_NET:
                 textView.setText("線上漫畫");
                 comicSrc.srcType = ComicSrc.SrcType.ST_NET_WNACG;
+
+                ResetButton(historyButton);
+                ResetButton(localButton);
+                HighLightButton(netButton);
                 break;
         }
         Grid grid = new Grid(comicSrc);
@@ -125,6 +146,14 @@ public class MainView implements StackableView {
         ));
         grid_parent.addView(textView);
         grid_parent.addView(gridView);
+    }
+    private void HighLightButton(Button button) {
+        button.setBackgroundResource(R.drawable.mana_ui_button_border_background);
+        button.setTextColor(ContextCompat.getColor(context, R.color.manaBtnBaseTextColor));
+    }
+    private void ResetButton(Button button) {
+        button.setBackgroundResource(R.drawable.mana_ui_base_border_background);
+        button.setTextColor(ContextCompat.getColor(context, R.color.manaUIBaseTextColor));
     }
 
     private void OnHistoryClick() {

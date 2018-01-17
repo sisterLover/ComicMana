@@ -32,7 +32,10 @@ public class LocalComicSiteHelper implements NetSiteHelper {
         }.start();
     }
     private void InnerEnumComic(ComicSrc src, int startFrom, int length, EnumCallback callback) {
-        ComicInfo[] result = null;
+        if(src.srcType != ComicSrc.SrcType.ST_LOCAL_FILE) {
+            callback.ComicDiscover(null);
+            return;
+        }
         File[] resultFiles = null;
         try {
             Lock();
@@ -51,7 +54,7 @@ public class LocalComicSiteHelper implements NetSiteHelper {
             callback.ComicDiscover(null);
             return;
         }
-        result = new ComicInfo[resultFiles.length];
+        ComicInfo[] result = new ComicInfo[resultFiles.length];
         for (int i = 0; i < resultFiles.length; ++i) {
             result[i] = new ComicInfo();
             result[i].src.srcType = ComicSrc.SrcType.ST_LOCAL_FILE;
@@ -62,10 +65,11 @@ public class LocalComicSiteHelper implements NetSiteHelper {
     }
     static public void LoadComicDir() {
         try {
-            //  為了保證 Enum 的時候
+            /*  為了保證 Enum 的時候不會因為正在取得 comicDir 而導致回傳 null
+                只要正在取得 comicDir 就直接 Lock
+             */
             Lock();
-            ArrayList<File> newComicDirs = LocalStorage.ScanContainerDirectory(MainActivity.manaConfig.containterDirs);
-            comicDirs = newComicDirs;
+            comicDirs = LocalStorage.ScanContainerDirectory(MainActivity.manaConfig.containterDirs);
             Unlock();
         }
         catch (InterruptedException e) {

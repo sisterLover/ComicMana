@@ -40,7 +40,7 @@ public class DefaultPageCache {
         GenPercentPage();
         canvas.drawBitmap(percentPage, 0, 0, null);
 
-        DrawText(canvas, viewWidth, viewHeight, "" + percent + "%");
+        DrawText(canvas, viewWidth, viewHeight, "" + percent + "%", 1.0f);
         if(percent < 0) percent = 0;
         if(percent > 100) percent = 100;
         DrawArc(canvas, viewWidth, viewHeight, ContextCompat.getColor(context, R.color.colorSSZPViewProgressFill), 0, 360*percent/100);
@@ -70,7 +70,7 @@ public class DefaultPageCache {
         canvas.drawRect(0, 0, viewWidth, viewHeight, paint);
 
         if (string != null) {
-            DrawText(canvas, viewWidth, viewHeight, string);
+            DrawText(canvas, viewWidth, viewHeight, string, 1.0f);
         }
         DrawArc(canvas, viewWidth, viewHeight, ContextCompat.getColor(context, R.color.colorSSZPViewProgressEmpty), 0, 360);
 
@@ -88,7 +88,7 @@ public class DefaultPageCache {
                 (width+arcWidth)/2, (height+arcWidth)/2,
                 begin, sweep, false, paint);
     }
-    static private void DrawText(Canvas canvas, int width, int height, String text) {
+    static private void DrawText(Canvas canvas, int width, int height, String text, float textSizeFactor) {
         Paint paint = new Paint();
 
         paint.setAntiAlias(true);
@@ -96,6 +96,7 @@ public class DefaultPageCache {
         paint.setTextAlign(Paint.Align.LEFT);
 
         int fontSize = Math.min(width, height) / 14;
+        fontSize = (int)(fontSize*textSizeFactor);
         paint.setTextSize(fontSize);
         Rect bound = new Rect();
         paint.getTextBounds(text, 0, text.length(), bound);
@@ -116,7 +117,7 @@ public class DefaultPageCache {
         paint.setStrokeWidth(4.0f);
         canvas.drawRect(0, 0, bitmap.getWidth(), bitmap.getHeight(), paint);
 
-        DrawText(canvas, bitmap.getWidth(), bitmap.getHeight(), "Test Comic "+ +chapter + "-" + page);
+        DrawText(canvas, bitmap.getWidth(), bitmap.getHeight(), "Test Comic "+ +chapter + "-" + page, 1.0f);
         return bitmap;
     }
 
@@ -135,7 +136,7 @@ public class DefaultPageCache {
         if(DefaultPageCache.context == null) {
             DefaultPageCache.context = context;
         }
-        DrawText(canvas, width, height, "沒有縮圖唷");
+        DrawText(canvas, width, height, "沒有縮圖唷", 2.0f);
         return emptyThumbnail;
     }
 }
