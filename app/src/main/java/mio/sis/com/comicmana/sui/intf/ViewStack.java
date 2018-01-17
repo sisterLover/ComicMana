@@ -28,11 +28,14 @@ public class ViewStack {
         stack.add(view);
         InflateLastView();
     }
-    public void Pop(StackableView view) {
+    public void Pop() {
         if (stack.size() == 0) return;
         FreeLastView();
         stack.remove(stack.size() - 1);
         if (stack.size() > 0) InflateLastView();
+    }
+    public int GetViewCnt() {
+        return stack.size();
     }
     private void FreeLastView() {
         StackableView lastView = stack.get(stack.size() - 1);

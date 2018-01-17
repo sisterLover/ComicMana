@@ -43,13 +43,14 @@ public class LocalStorage {
     static final String APP_DIR = "ComicMana";
     static final String APP_CONFIG_FILE = "comicmana.cfg";
     static final String APP_DOWNLOAD_DIR = "Download";
+    static final String APP_CACHE_DIR = "Cache";
     static final String COMIC_THUMBNAIL_FILE = "thumbnail";
     static final String COMIC_CONFIG_FILE = "comic.cfg";
 
     static public final String APP_ALTER_EXTENSION = "cmp";    //  comic mana picture
     static public final String[] SUPPORT_EXTENSION = {"png" , "jpg", "jpeg", APP_ALTER_EXTENSION};
 
-    static private final int
+    static public final int
             COMIC_DIR_NOT_DIR = 0,      //  表示此路徑下並不是漫畫
             COMIC_DIR_SINGLE = 1,       //  表示此 comic directory 只有一章節，且圖片檔案直接放在目錄下
             COMIC_DIR_MULTIPLE = 2;     //  表示此 comic directory 可以含有多章節，每章節圖片放在 chapter directory 裡
@@ -129,7 +130,7 @@ public class LocalStorage {
                 for (File file : childs) {
                     if (file.isDirectory()) {
                         PageCountPair pair = new PageCountPair();
-                        pair.path = file.getName();
+                        pair.SetPath(file.getName());
                         pair.pageCnt = CountPicture(comicInfo, file.listFiles());
                         if (pair.pageCnt > 0) {
                             pages.add(pair);
@@ -221,7 +222,7 @@ public class LocalStorage {
     /*
         傳入某個 directory 的子目錄/子檔案，判斷此 directory 是否為 comic directory
      */
-    static private int GetComicDirectoryType(File[] childs) {
+    static public int GetComicDirectoryType(File[] childs) {
         for(File file : childs) {
             if(file.isDirectory()) {
                 //  子資料夾
@@ -244,6 +245,55 @@ public class LocalStorage {
         return COMIC_DIR_NOT_DIR;
     }
 
+    /*
+        childs 是某個目錄底下的所有節點列表
+        回傳已經排序好的漫畫頁"名稱"(非絕對路徑的意思)
+        例如傳入 1.png 3.png 2.png
+        則回傳 1.png 2.png 3.png
+     */
+    static public ArrayList<String> ListComicPage(File[] childs) {
+        ArrayList<SortableString> sortableStrings = new ArrayList<>();
+        for(File file : childs) {
+            if(file.isDirectory()) continue;
+            String fileName = file.getName();
+            String ext = SFile.GetExtension(fileName);
+            if(ext == null) continue;
+            if(!SChar.StringInListIgnoreCase(ext, SUPPORT_EXTENSION)) continue;
+            if(SFile.GetNameWithoutExtension(fileName).compareToIgnoreCase(COMIC_THUMBNAIL_FILE) == 0) continue;
+            SortableString sortableString = new SortableString();
+            sortableString.SetString(fileName);
+            sortableStrings.add(sortableString);
+        }
+        Collections.sort(sortableStrings);
+        ArrayList<String> result = new ArrayList<>();
+        for(int i=0;i<sortableStrings.size();++i) {
+            result.add(sortableStrings.get(i).GetString());
+        }
+        return result;
+    }
+
+    /*
+        childs 是某個目錄底下的所有節點列表
+        回傳已經排序好的漫畫章節目錄"名稱"(非絕對路徑的意思)
+     */
+    static public ArrayList<String> ListChapterDir(File[] childs) {
+        ArrayList<SortableString> sortableStrings = new ArrayList<>();
+        for(File file : childs) {
+            if(!file.isDirectory()) continue;
+            int type = GetComicDirectoryType(file.listFiles());
+            if(type != COMIC_DIR_SINGLE) continue;;
+            SortableString sortableString = new SortableString();
+            sortableString.SetString(file.getName());
+            sortableStrings.add(sortableString);
+        }
+        Collections.sort(sortableStrings);
+        ArrayList<String> result = new ArrayList<>();
+        for(int i=0;i<sortableStrings.size();++i) {
+            result.add(sortableStrings.get(i).GetString());
+        }
+        return result;
+    }
+
 
     static public File GetConfigFile() {
         UpdatePath();
@@ -258,26 +308,58 @@ public class LocalStorage {
         if(pathAvailable) return new File(basePath, APP_DOWNLOAD_DIR);
         return null;
     }
+    static public File GetCacheDir() {
+        UpdatePath();
+        if(pathAvailable) return new File(basePath, APP_CACHE_DIR);
+        return null;
+    }
     static class PageCountPair implements Comparable<PageCountPair> {
         public int pageCnt;
-        public String path;
+        private String path;
+        private int num;
 
+        public void SetPath(String path) {
+            this.path = path;
+            num = SChar.GetNumber(SFile.GetNameWithoutExtension(path).toCharArray());
+        }
+        public String GetPath() {
+            return path;
+        }
         /*
             如果兩者皆為純數字，則進行數字比較
             用來使
-            1.png 2.png 3.png ... 99.png 可以和
-            01.png 02.png 03.png ... 99.png 一樣正確排列
+            1 2 3 ... 99 可以和
+            01 02 03 ... 99 一樣正確排列
          */
         @Override
         public int compareTo(@NonNull PageCountPair pageCountPair) {
-            int num1 = SChar.GetNumber(path.toCharArray()),
-                    num2 = SChar.GetNumber(pageCountPair.path.toCharArray());
-            if(num1 != -1 && num2 != -1) {
-                if(num1 < num2) return -1;
-                if(num1 > num2) return 1;
+            if(num != -1 && pageCountPair.num != -1) {
+                if(num < pageCountPair.num) return -1;
+                if(num > pageCountPair.num) return 1;
                 return 0;
             }
             return path.compareToIgnoreCase(pageCountPair.path);
+        }
+    }
+    static class SortableString implements Comparable<SortableString> {
+        private String string;
+        private int num;
+
+        public void SetString(String string) {
+            this.string = string;
+            num = SChar.GetNumber(SFile.GetNameWithoutExtension(string).toCharArray());
+        }
+        public String GetString() {
+            return string;
+        }
+        @Override
+        public int compareTo(@NonNull SortableString sortableString) {
+            if(num != -1 && sortableString.num != -1) {
+                if(num < sortableString.num) return -1;
+                if(num > sortableString.num) return 1;
+                return 0;
+            }
+            return string.compareToIgnoreCase(sortableString.string);
         }
     }
 }

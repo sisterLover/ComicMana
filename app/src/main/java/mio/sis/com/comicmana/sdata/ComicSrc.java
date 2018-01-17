@@ -27,6 +27,12 @@ public class ComicSrc implements ReadWritable {
         /*
             path = SD card path(absolute)
          */
+        ST_HISTORY = 11,
+        /*
+            path = unuse
+            這個類型只用於 ComicInfoCache.EnumComic 請求回傳歷史紀錄
+            歷史紀錄的 ComicInfo 會是該本漫畫原本的 SrcType
+         */
 
         ST_NET_EX = 100,
         /*

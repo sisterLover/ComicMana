@@ -186,7 +186,7 @@ public class ChapterSelectView implements StackableView {
             chapterButton.setOnClickListener(new ChapterButtonListener(chapterIndex[i]));
             lineParent.addView(chapterButton);
         }
-        for(int i=0;i<5-length;++i) {
+        for (int i = 0; i < 5 - length; ++i) {
             TextView emptyText = new TextView(context);
             emptyText.setText("");
             emptyText.setLayoutParams(textParams);

@@ -13,6 +13,7 @@ public interface NetImageHelper {
     /*
         GetComicPage 取得漫畫的某一頁並讀入至 SImgPage 裡
         此函數會在 UI thread 被呼叫
+        通過 ImageCache 呼叫則保證在非 UI thread 被呼叫
      */
     void GetComicPage(ComicSrc src, ComicPosition position, ComicPageCallback callback);
 

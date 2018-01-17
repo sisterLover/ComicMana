@@ -1,16 +1,17 @@
-package mio.sis.com.comicmana.snet;
+package mio.sis.com.comicmana.scache;
 
 import android.graphics.Bitmap;
 
+import mio.sis.com.comicmana.snet.NetImageHelper;
 import mio.sis.com.comicmana.sui.comp.SImagePage;
 
 /**
- * Created by Administrator on 2017/12/29.
+ * Created by Administrator on 2018/1/16.
  */
 
-public class TestComicImageHelperCallback implements NetImageHelper.ComicPageCallback {
-    SImagePage imagePage;
-    public TestComicImageHelperCallback(SImagePage imagePage) {
+public class DefaultImageHelper implements NetImageHelper.ComicPageCallback {
+    private SImagePage imagePage;
+    public DefaultImageHelper(SImagePage imagePage) {
         this.imagePage = imagePage;
     }
     @Override

@@ -97,14 +97,18 @@ public class SFile {
      */
     static public String GetExtension(File file) {
         if (file.isDirectory()) return null;
-        String string = file.getName();
+        return GetExtension(file.getName());
+    }
+    static public String GetExtension(String string) {
         int start_pos = string.lastIndexOf('.');
         if (start_pos == -1) return null;
         if (start_pos == string.length() - 1) return null;
         return string.substring(start_pos + 1);
     }
     static public String GetNameWithoutExtension(File file) {
-        String string = file.getName();
+        return GetNameWithoutExtension(file.getName());
+    }
+    static public String GetNameWithoutExtension(String string) {
         int dot_pos = string.lastIndexOf('.');
         if(dot_pos==-1) return string;
         return string.substring(0, dot_pos);
