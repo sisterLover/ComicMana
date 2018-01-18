@@ -105,14 +105,10 @@ public class ChapterSelectView implements StackableView {
         //  comic option
         optionParent = root.findViewById(R.id.chapter_select_option_parent);
         if(comicInfo.src.srcType == ComicSrc.SrcType.ST_LOCAL_FILE) {
-            Button encryptButton = new Button(context), decryptButton = new Button(context);
-            encryptButton.setBackgroundResource(R.drawable.mana_ui_button_border_background);
-            decryptButton.setBackgroundResource(R.drawable.mana_ui_button_border_background);
-            encryptButton.setTextColor(ContextCompat.getColor(context, R.color.manaBtnBaseTextColor));
-            decryptButton.setTextColor(ContextCompat.getColor(context, R.color.manaBtnBaseTextColor));
-            encryptButton.setText("媒體櫃隱藏");
-            decryptButton.setText("媒體櫃顯示");
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+            Button encryptButton = CreateButton(inflater, "媒體櫃隱藏"),
+                    decryptButton = CreateButton(inflater, "媒體櫃顯示");
+            LinearLayout.LayoutParams params =
+                    new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
             encryptButton.setLayoutParams(params);
             decryptButton.setLayoutParams(params);
             encryptButton.setOnClickListener(new View.OnClickListener() {
@@ -131,10 +127,7 @@ public class ChapterSelectView implements StackableView {
             optionParent.addView(decryptButton);
         }
         else {
-            Button downloadButton = new Button(context);
-            downloadButton.setBackgroundResource(R.drawable.mana_ui_button_border_background);
-            downloadButton.setTextColor(ContextCompat.getColor(context, R.color.manaBtnBaseTextColor));
-            downloadButton.setText("下載");
+            Button downloadButton = CreateButton(inflater, "下載");
             LinearLayout.LayoutParams params =
                     new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
             downloadButton.setLayoutParams(params);
@@ -172,6 +165,7 @@ public class ChapterSelectView implements StackableView {
         產生 chapterIndex 的 chapter button
      */
     private LinearLayout GenerateSingleLine(Context context, String[] chapterTitle, int[] chapterIndex, int length) {
+        LayoutInflater inflater = LayoutInflater.from(context);
         LinearLayout lineParent = new LinearLayout(context);
         LinearLayout.LayoutParams parentParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT),
@@ -181,10 +175,7 @@ public class ChapterSelectView implements StackableView {
         lineParent.setLayoutParams(parentParams);
 
         for (int i = 0; i < length; ++i) {
-            Button chapterButton = new Button(context);
-            chapterButton.setBackgroundResource(R.drawable.mana_ui_button_border_background);
-            chapterButton.setTextColor(ContextCompat.getColor(context, R.color.manaBtnBaseTextColor));
-            chapterButton.setText(chapterTitle[i]);
+            Button chapterButton = CreateButton(inflater, chapterTitle[i]);
             chapterButton.setLayoutParams(buttonParams);
             chapterButton.setOnClickListener(new ChapterButtonListener(chapterIndex[i]));
             lineParent.addView(chapterButton);
@@ -318,6 +309,17 @@ public class ChapterSelectView implements StackableView {
         optionParent.removeAllViews();
         optionParent = null;
         root = null;
+    }
+
+    @Override
+    public boolean OnBackPress() {
+        return true;
+    }
+
+    private Button CreateButton(LayoutInflater inflater, String text) {
+        Button result = (Button)inflater.inflate(R.layout.chapter_select_button_item, null);
+        result.setText(text);
+        return result;
     }
 
     private class ChapterButtonListener implements View.OnClickListener {

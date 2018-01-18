@@ -90,6 +90,12 @@ public class MainView implements StackableView {
     public void FreeView() {
 
     }
+
+    @Override
+    public boolean OnBackPress() {
+        return true;
+    }
+
     private void ClearCurrentView() {
         grid_parent.removeAllViews();
     }

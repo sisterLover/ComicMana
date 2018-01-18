@@ -79,6 +79,11 @@ public class ComicView implements StackableView {
         root = null;
     }
 
+    @Override
+    public boolean OnBackPress() {
+        return true;
+    }
+
     private void OnSSZPClick(int x, int y, int width, int height) {
 
     }

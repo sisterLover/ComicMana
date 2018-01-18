@@ -14,4 +14,9 @@ public interface StackableView {
     View InflateView(Context context);
     View GetView();
     void FreeView();
+    /*
+        告訴 View 返回鍵被按下
+        回傳是否需要 PopView
+     */
+    boolean OnBackPress();
 }

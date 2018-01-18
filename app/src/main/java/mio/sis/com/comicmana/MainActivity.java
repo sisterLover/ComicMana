@@ -18,6 +18,7 @@ import mio.sis.com.comicmana.sdata.ManaConfig;
 import mio.sis.com.comicmana.sfile.SFile;
 import mio.sis.com.comicmana.sui.comp.PathSelector;
 import mio.sis.com.comicmana.sui.comp.PathSelectorListener;
+import mio.sis.com.comicmana.sui.inst.ConfigView;
 import mio.sis.com.comicmana.sui.inst.MainView;
 import mio.sis.com.comicmana.sui.intf.ViewStack;
 
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         viewStack = new ViewStack(this, root);
         //viewStack.Push(new ChapterSelectView(viewStack, ComicInfo.GetTestComicInfo()));
         viewStack.Push(new MainView(viewStack));
+        viewStack.Push(new ConfigView(viewStack));
     }
 
     @Override
@@ -52,7 +54,9 @@ public class MainActivity extends AppCompatActivity {
             if(viewStack.GetViewCnt()<=1) {
                 return super.onKeyDown(keyCode, event);
             }
-            viewStack.Pop();
+            if(viewStack.GetLastView().OnBackPress()) {
+                viewStack.Pop();
+            }
             return true;
         }
         return super.onKeyDown(keyCode, event);

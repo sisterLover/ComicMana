@@ -1,6 +1,7 @@
 package mio.sis.com.comicmana.sfile;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -44,6 +45,9 @@ public class LocalStorage {
     static final String APP_CONFIG_FILE = "comicmana.cfg";
     static final String APP_DOWNLOAD_DIR = "Download";
     static final String APP_CACHE_DIR = "Cache";
+    static final String CACHE_CONFIG_FILE = "cache.rec";
+    static final String HISTORY_FILE = "history.rec";
+
     static final String COMIC_THUMBNAIL_FILE = "thumbnail";
     static final String COMIC_CONFIG_FILE = "comic.cfg";
 
@@ -70,6 +74,7 @@ public class LocalStorage {
             path = new File(file, APP_DIR);
             if(path.exists()) {
                 if(path.isDirectory()) {
+                    Log.d("LS_TAG", "found exist directory at " + path.toString());
                     basePath = path;
                     pathAvailable = true;
                     return;
@@ -85,16 +90,19 @@ public class LocalStorage {
         if(candidate.size() == 0) {
             //  directory not found and cannot build new directory
             pathAvailable = false;
+            Log.d("LS_TAG", "directory not found and cannot build");
             return;
         }
         pathAvailable = false;
         for(int i=0;i<candidate.size();++i) {
             path = candidate.get(i);
+            Log.d("LS_TAG", "Try to build " + path.toString());
             if(path.mkdirs()) {
                 basePath = path;
                 pathAvailable = true;
                 return;
             }
+            Log.d("LS_TAG", "but fail");
         }
     }
     /*
@@ -300,6 +308,11 @@ public class LocalStorage {
         if(pathAvailable) return new File(basePath, APP_CONFIG_FILE);
         return null;
     }
+    static public File GetHistoryFile() {
+        UpdatePath();
+        if(!pathAvailable) return null;
+        return new File(basePath, HISTORY_FILE);
+    }
     static public File GetComicConfigFile(File comicPath) {
         return new File(comicPath, COMIC_CONFIG_FILE);
     }
@@ -316,6 +329,11 @@ public class LocalStorage {
         File dir = new File(basePath, APP_CACHE_DIR);
         if(!dir.exists()) dir.mkdirs();
         return dir;
+    }
+    static public File GetCacheConfigFile() {
+        File dir = GetCacheDir();
+        if(!dir.exists()) return null;
+        return new File(dir, CACHE_CONFIG_FILE);
     }
     static class PageCountPair implements Comparable<PageCountPair> {
         public int pageCnt;

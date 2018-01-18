@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/manaUIBaseBackground">
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/manaUIBaseTextColor"
+        android:gravity="center"
+        android:textSize="35sp"
+        android:text="程式選項" />
+
+    <Button
+        android:id="@+id/config_view_delete_cache_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/mana_ui_button_border_background"
+        android:textColor="@color/manaBtnBaseTextColor"
+        android:text="刪除快取" />
+
+    <Button
+        android:id="@+id/config_view_path_edit_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/mana_ui_button_border_background"
+        android:textColor="@color/manaBtnBaseTextColor"
+        android:text="編輯本地漫畫路徑" />
+</LinearLayout>

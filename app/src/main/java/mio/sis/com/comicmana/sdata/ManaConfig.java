@@ -1,5 +1,7 @@
 package mio.sis.com.comicmana.sdata;
 
+import android.util.Log;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -41,6 +43,7 @@ public class ManaConfig implements ReadWritable {
     }
     public void SaveConfig() {
         try {
+            Log.d("LS_TAG", "Try writing config");
             File configFile = LocalStorage.GetConfigFile();
             if (configFile != null) {
                 FileOutputStream fileOutputStream = new FileOutputStream(configFile);
@@ -50,7 +53,7 @@ public class ManaConfig implements ReadWritable {
                 fileOutputStream.close();
             }
         } catch (Exception e) {
-
+            Log.d("LS_TAG", "Write fail");
         }
     }
 

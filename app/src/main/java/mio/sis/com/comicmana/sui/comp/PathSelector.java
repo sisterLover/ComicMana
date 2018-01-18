@@ -1,6 +1,7 @@
 package mio.sis.com.comicmana.sui.comp;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -33,10 +34,14 @@ public class PathSelector {
     ArrayList<View> items;
     ItemClickListener itemClickListener;
 
+    //  support sd card selecting
+    //boolean sdcardSelecting;
+
     public PathSelector(Context context, PathSelectorListener listener) {
         this.context = context;
         selectorListener = listener;
-        lastValidPath = currentPath = new File("/");    //  root
+        lastValidPath = currentPath = new File("/sdcard");    //  root
+        //sdcardSelecting = false;
 
         LayoutInflater inflater = LayoutInflater.from(context);
         mainLayout = inflater.inflate(R.layout.path_selector_layout, null);
@@ -63,6 +68,8 @@ public class PathSelector {
                 selectorListener.OnCancel();
             }
         });
+
+        GenerateView();
     }
     public View GetView() {
         return mainLayout;
@@ -78,6 +85,10 @@ public class PathSelector {
     public void MoveToParent() {
         lastValidPath = currentPath;
         currentPath = currentPath.getParentFile();
+        if(currentPath == null) {
+            Toast.makeText(context, "Invalid Path", Toast.LENGTH_SHORT).show();
+            currentPath = lastValidPath;
+        }
         GenerateView();
     }
     public void GenerateView() {
@@ -90,7 +101,7 @@ public class PathSelector {
         }
         Arrays.sort(list);
 
-        titleText.setText("Path:" + currentPath.getAbsolutePath());
+        titleText.setText("  Path:" + currentPath.getAbsolutePath());
 
         listLayout.removeAllViews();
         LayoutInflater inflater = LayoutInflater.from(context);

@@ -37,6 +37,9 @@ public class ViewStack {
     public int GetViewCnt() {
         return stack.size();
     }
+    public StackableView GetLastView() {
+        return stack.get(GetViewCnt() - 1);
+    }
     private void FreeLastView() {
         StackableView lastView = stack.get(stack.size() - 1);
         parentLayout.removeView(lastView.GetView());
