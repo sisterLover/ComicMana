@@ -9,17 +9,17 @@
         android:id="@+id/grid_image"
         android:layout_width="match_parent"
         android:layout_height="0pt"
-        android:layout_weight="8"
-        android:layout_marginTop="5pt"
+        android:layout_weight="1"
         android:background="@mipmap/ic_launcher"></ImageView>
 
     <TextView
         android:id="@+id/grid_text"
         android:layout_width="match_parent"
-        android:layout_height="0pt"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:gravity="center"
-        android:paddingBottom="15px"
-        android:paddingTop="15px"
-        android:textSize="9pt"></TextView>
+        android:textColor="@color/manaUIBaseTextColor"
+        android:textSize="9pt"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"></TextView>
 </LinearLayout>

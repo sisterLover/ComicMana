@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import mio.sis.com.comicmana.MainActivity;
 import mio.sis.com.comicmana.R;
 import mio.sis.com.comicmana.sdata.ComicInfo;
 import mio.sis.com.comicmana.sdata.STime;
@@ -32,6 +33,8 @@ public class ComicView implements StackableView {
     public ComicView(ViewStack viewStack, ComicInfo comicInfo) {
         this.viewStack = viewStack;
         this.comicInfo = comicInfo;
+
+        MainActivity.historyRecord.PushRecord(comicInfo.src);
     }
 
     @Override

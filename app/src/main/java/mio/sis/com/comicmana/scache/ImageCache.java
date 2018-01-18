@@ -38,6 +38,38 @@ public class ImageCache {
         new InnerThread(page, src, position).start();
     }
     /*
+        取得無損頁面
+
+     */
+    static public void GetRawComicPage(final ComicSrc src, final ComicPosition position, final NetImageHelper.ComicPageCallback callback) {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                InnerRawGetComicPage(src, position, callback);
+            }
+        }.start();
+    }
+    static private void InnerRawGetComicPage(ComicSrc src, ComicPosition position, NetImageHelper.ComicPageCallback callback) {
+        switch (src.srcType) {
+            case ComicSrc.SrcType.ST_TEST_SRC:
+                //  測試漫畫不用快取
+                testComicImageHelper.GetComicPage(src, position, callback);
+                break;
+            case ComicSrc.SrcType.ST_LOCAL_FILE:
+                //  debuging
+                //testComicImageHelper.GetComicPage(src, position, new DefaultImageHelper(page));
+                localComicImageHelper.GetComicPage(src, position, callback);
+                break;
+            case ComicSrc.SrcType.ST_NET_WNACG:
+                testComicImageHelper.GetComicPage(src, position, callback);
+                break;
+            default:
+                callback.PageRecieve(null);
+                break;
+        }
+    }
+    /*
         只應該在非 UI thread 執行
      */
     static private void InnerGetComicPage(SImagePage page, ComicSrc src, ComicPosition position) {
@@ -52,7 +84,19 @@ public class ImageCache {
                 testComicImageHelper.GetComicPage(src, position, new DefaultImageHelper(page));
                 break;
             case ComicSrc.SrcType.ST_LOCAL_FILE:
-
+                //  debuging
+                //testComicImageHelper.GetComicPage(src, position, new DefaultImageHelper(page));
+                localComicImageHelper.GetComicPage(
+                        src,
+                        position,
+                        new ImageCacheImageHelper(page, src, position)
+                );
+                break;
+            case ComicSrc.SrcType.ST_NET_WNACG:
+                testComicImageHelper.GetComicPage(src, position, new DefaultImageHelper(page));
+                break;
+            default:
+                page.PostError();
                 break;
         }
     }
@@ -90,6 +134,10 @@ public class ImageCache {
         }
         @Override
         public void PageRecieve(Bitmap bitmap) {
+            if(bitmap == null) {
+                defaultImageHelper.PageRecieve(null);
+                return;
+            }
             Bitmap scaleBitmap = ImageCache.memoryCache.PushCache(comicSrc, comicPosition, bitmap);
             defaultImageHelper.PageRecieve(scaleBitmap);
         }

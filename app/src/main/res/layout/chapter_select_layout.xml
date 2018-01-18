@@ -31,7 +31,10 @@
                 android:layout_height="wrap_content"
                 android:textSize="24sp"
                 android:text="TextView"
-                android:textColor="@color/manaUIBaseTextColor"/>
+                android:textColor="@color/manaUIBaseTextColor"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"/>
             <!--
             -->
 

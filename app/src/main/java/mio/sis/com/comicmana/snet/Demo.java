@@ -33,4 +33,14 @@ public class Demo implements NetSiteHelper {
             callback.ComicDiscover(info);
         }
     }
+
+    @Override
+    public boolean IsComicAvailable(ComicSrc src) {
+        return false;
+    }
+
+    @Override
+    public ComicInfo RequestComicInfo(ComicSrc src) {
+        return null;
+    }
 }

@@ -1,7 +1,6 @@
 package mio.sis.com.comicmana.sui.comp;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -34,14 +33,10 @@ public class PathSelector {
     ArrayList<View> items;
     ItemClickListener itemClickListener;
 
-    //  support sd card selecting
-    //boolean sdcardSelecting;
-
     public PathSelector(Context context, PathSelectorListener listener) {
         this.context = context;
         selectorListener = listener;
         lastValidPath = currentPath = new File("/sdcard");    //  root
-        //sdcardSelecting = false;
 
         LayoutInflater inflater = LayoutInflater.from(context);
         mainLayout = inflater.inflate(R.layout.path_selector_layout, null);

@@ -3,6 +3,7 @@ package mio.sis.com.comicmana.sui.inst;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import mio.sis.com.comicmana.MainActivity;
 import mio.sis.com.comicmana.R;
 import mio.sis.com.comicmana.image.ImageLib;
 import mio.sis.com.comicmana.other.SChar;
@@ -80,6 +82,7 @@ public class ChapterSelectView implements StackableView {
         }
         TextView titleView = root.findViewById(R.id.chapter_select_title_view);
         titleView.setText(comicInfo.name);
+        titleView.setSelected(true);
 
         Button beginButton = root.findViewById(R.id.chapter_select_begin_button);
         if(comicInfo.lastPosition.chapter == ComicPosition.CHAPTER_NOT_READ_YET) {
@@ -230,6 +233,7 @@ public class ChapterSelectView implements StackableView {
         if(comicInfo.src.srcType != ComicSrc.SrcType.ST_LOCAL_FILE) return;
         if(encrypting) return;
         encrypting = true;
+        Log.d("LS_TAG", "Starting Encrypt");
         new Thread() {
             @Override
             public void run() {
@@ -251,8 +255,21 @@ public class ChapterSelectView implements StackableView {
             if (SChar.StringInListIgnoreCase(ext, LocalStorage.SUPPORT_EXTENSION)) {
                 if (ext.compareToIgnoreCase(LocalStorage.APP_ALTER_EXTENSION) != 0) {
                     String title = SFile.GetNameWithoutExtension(file);
+                    File newFile = new File(file.getParentFile(), title + "." + LocalStorage.APP_ALTER_EXTENSION);
+                    if(!file.canWrite()) {
+                        Log.d("LS_TAG", "cannot write");
+                    }
+                    try {
+                        if(!newFile.createNewFile()) {
+                            Log.d("LS_TAG", "Create Return Fail");
+                        }
+                    }
+                    catch (Exception e) {
+                        Log.d("LS_TAG", "CreateFile Exception");
+                        Log.d("LS_TAG", e.toString());
+                    }
                     //  失敗我也不能怎樣
-                    file.renameTo(new File(file.getParentFile(), title + "/" + LocalStorage.APP_ALTER_EXTENSION));
+                    file.renameTo(newFile);
                 }
             }
         }

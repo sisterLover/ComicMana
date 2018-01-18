@@ -20,12 +20,12 @@ public interface NetSiteHelper {
         src.type 與 src.path 皆會是有效參數
         回傳此 ComicSrc 是否直向有效的漫畫
      */
-    //boolean IsComicAvailable(ComicSrc src);
+    boolean IsComicAvailable(ComicSrc src);
     /*
         src.type 與 src.path 皆會是有效參數
         回傳此 ComicSrc 的完整 ComicInfo
      */
-    //ComicInfo RequestComicInfo(ComicSrc src);
+    ComicInfo RequestComicInfo(ComicSrc src);
 
     interface EnumCallback {
         /*

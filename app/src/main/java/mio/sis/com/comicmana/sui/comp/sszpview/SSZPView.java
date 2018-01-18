@@ -24,7 +24,7 @@ import mio.sis.com.comicmana.sui.comp.HintText;
  */
 
 public class SSZPView extends LinearLayout {
-    static final float STANDARD_FACTOR = 1.5f;
+    static final float STANDARD_FACTOR = 1.0f;
 
     Context context;
     ScaleGestureDetector scaleGestureDetector;

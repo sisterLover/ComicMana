@@ -88,7 +88,14 @@ public class MainView implements StackableView {
 
     @Override
     public void FreeView() {
+        top_bar_parent.removeAllViews();
+        top_bar_parent = null;
 
+        grid_parent.removeAllViews();
+        grid_parent = null;
+
+        historyButton = localButton = netButton = null;
+        root = null;
     }
 
     @Override

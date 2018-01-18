@@ -63,10 +63,8 @@ public class Grid implements AbstractComicGrid{
 
 
 
-    public void SetGrid()
-    {
-        ComicInfoCache.EnumComic(this.src,this.pages,12,new GridCallBack(this));
-
+    public void SetGrid() {
+        ComicInfoCache.EnumComic(this.src, this.pages, 12, new GridCallBack(this));
     }
 
     public void PostUpdateGridView(final ComicInfo[] comicInfos)
@@ -110,11 +108,11 @@ public class Grid implements AbstractComicGrid{
     }
     @Override
     public View InflateView(Context context) {
-        LayoutInflater inflater=LayoutInflater.from(context);
-        mainLayout=inflater.inflate(R.layout.grid_view,null);
-        gestureDetector=new GestureDetector(context,new Mlistener());
-        this.context=context;
-        ComicInfoCache.EnumComic(this.src,this.pages,12,new GridCallBack(this));
+        LayoutInflater inflater = LayoutInflater.from(context);
+        mainLayout = inflater.inflate(R.layout.grid_view, null);
+        gestureDetector = new GestureDetector(context, new Mlistener());
+        this.context = context;
+        ComicInfoCache.EnumComic(this.src, (this.pages - 1) * 12, 12, new GridCallBack(this));
         return mainLayout;
     }
 

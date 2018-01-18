@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 import mio.sis.com.comicmana.MainActivity;
 import mio.sis.com.comicmana.R;
+import mio.sis.com.comicmana.snet.inst.LocalComicSiteHelper;
 import mio.sis.com.comicmana.sui.comp.PathSelector;
 import mio.sis.com.comicmana.sui.comp.PathSelectorListener;
 import mio.sis.com.comicmana.sui.intf.StackableView;
@@ -93,6 +94,18 @@ public class ConfigPathSelectView implements StackableView {
     public void FreeView() {
         MainActivity.manaConfig.containterDirs = containerDir;
         MainActivity.manaConfig.SaveConfig();
+        LocalComicSiteHelper.LoadComicDir();
+
+        addButton = deleteButton = null;
+
+        itemParent.removeAllViews();
+        RemoveSelector();
+        //  重新渲染的 ConfigPathSelectView 必不會打開 selector，因為這邊 remove 已經將 active 設定為 false
+        itemParent = selectorParent = null;
+
+        items = null;
+
+        root = null;
     }
 
     @Override

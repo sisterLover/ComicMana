@@ -164,6 +164,12 @@ public class LocalStorage {
                 comicInfo.chapterCnt = 0;
                 break;
         }
+        /*
+            如果沒有縮圖，就用第一章第一頁
+         */
+        if(comicInfo.thumbnail==null) {
+
+        }
     }
     /*
         計算 childs 當中有多少張圖片(不含 thumbnail)
@@ -194,6 +200,7 @@ public class LocalStorage {
         ArrayList<File> comicDirs = new ArrayList<>();
         for(File file : containerDirs) {
             if(!file.isDirectory()) continue;
+            Log.d("LS_TAG", "Scanning " + file.toString());
             InnerScanContainerDirectory(file, comicDirs);
         }
         Collections.sort(comicDirs);

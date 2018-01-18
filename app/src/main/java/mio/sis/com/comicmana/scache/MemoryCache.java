@@ -68,6 +68,7 @@ public class MemoryCache {
                 return null;
             }
         }
+        Log.d("LS_TAG", "Scale Success, Caching");
         try {
             Lock();
             if(entryConunt < CACHE_SIZE) {

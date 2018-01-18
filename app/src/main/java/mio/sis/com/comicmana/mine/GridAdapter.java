@@ -102,6 +102,8 @@ public class GridAdapter extends BaseAdapter {
             titleParams.height = 15;
             viewHolder.title.setLayoutParams(titleParams);
             */
+            viewHolder.title.setText(comicInfo[position].name);
+            viewHolder.title.setSelected(true);
             convertView.setTag(viewHolder);
         } else
         {

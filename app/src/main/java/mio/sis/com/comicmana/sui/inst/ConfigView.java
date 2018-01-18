@@ -54,6 +54,8 @@ public class ConfigView implements StackableView {
 
     @Override
     public void FreeView() {
+        deleteCacheButton = editPathButton = null;
+        root = null;
     }
 
     @Override

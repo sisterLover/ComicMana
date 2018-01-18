@@ -1,5 +1,7 @@
 package mio.sis.com.comicmana.snet.inst;
 
+import android.util.Log;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -64,6 +66,14 @@ public class LocalComicSiteHelper implements NetSiteHelper {
         callback.ComicDiscover(result);
     }
     static public void LoadComicDir() {
+        new Thread() {
+            @Override
+            public void run() {
+                InnerLoadComicDir();
+            }
+        }.start();
+    }
+    static private void InnerLoadComicDir() {
         try {
             /*  為了保證 Enum 的時候不會因為正在取得 comicDir 而導致回傳 null
                 只要正在取得 comicDir 就直接 Lock
@@ -71,6 +81,10 @@ public class LocalComicSiteHelper implements NetSiteHelper {
             Lock();
             comicDirs = LocalStorage.ScanContainerDirectory(MainActivity.manaConfig.containterDirs);
             Unlock();
+            /*Log.d("LS_TAG", "InnerLoadComicDir finished");
+            for(File file : comicDirs) {
+                Log.d("LS_TAG", "Local Comic Found = " + file.toString());
+            }*/
         }
         catch (InterruptedException e) {
 
@@ -85,5 +99,23 @@ public class LocalComicSiteHelper implements NetSiteHelper {
         catch (InterruptedException e) {
 
         }
+    }
+
+    @Override
+    public boolean IsComicAvailable(ComicSrc src) {
+        if(src.srcType != ComicSrc.SrcType.ST_LOCAL_FILE) return false;
+        File dir = new File(src.path);
+        if(!dir.exists() || !dir.isDirectory()) return false;
+        int type = LocalStorage.GetComicDirectoryType(dir.listFiles());
+        return type == LocalStorage.COMIC_DIR_SINGLE || type == LocalStorage.COMIC_DIR_MULTIPLE;
+    }
+
+    @Override
+    public ComicInfo RequestComicInfo(ComicSrc src) {
+        if(src.srcType != ComicSrc.SrcType.ST_LOCAL_FILE) return null;
+        ComicInfo comicInfo = new ComicInfo();
+        comicInfo.src = src;
+        LocalStorage.LoadComicInfo(comicInfo);
+        return comicInfo;
     }
 }

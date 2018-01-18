@@ -40,7 +40,7 @@ public class ImageLib {
         RectF destRect = new RectF();
         destRect.left = 0; destRect.top = 0;
         destRect.right = destWidth; destRect.bottom = destHeight;
-        canvas.drawBitmap(result, null, destRect, null);
+        canvas.drawBitmap(bitmap, null, destRect, null);
         return result;
     }
 }

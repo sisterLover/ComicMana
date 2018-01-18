@@ -9,10 +9,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 
 import mio.sis.com.comicmana.sfile.LocalStorage;
 import mio.sis.com.comicmana.sfile.ReadWritable;
 import mio.sis.com.comicmana.sfile.SFile;
+import mio.sis.com.comicmana.snet.inst.LocalComicSiteHelper;
 
 /**
  * Created by Administrator on 2018/1/9.
@@ -21,39 +23,79 @@ import mio.sis.com.comicmana.sfile.SFile;
  */
 
 public class ManaConfig implements ReadWritable {
+    static private Semaphore semaphore = new Semaphore(1);
+    private void Lock() throws InterruptedException { semaphore.acquire(); }
+    private void Unlock() { semaphore.release(); }
+
     public ArrayList<File> containterDirs;
 
 
     public ManaConfig() {
         containterDirs = new ArrayList<>();
     }
+
     public void LoadConfig() {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                InnerLoadConfig();
+            }
+        }.start();
+    }
+
+    private void InnerLoadConfig() {
         try {
+            Lock();
             File configFile = LocalStorage.GetConfigFile();
             if (configFile != null) {
-                FileInputStream fileInputStream = new FileInputStream(configFile);
-                DataInputStream dataInputStream = new DataInputStream(fileInputStream);
-                ReadStream(dataInputStream);
-                dataInputStream.close();
-                fileInputStream.close();
+                try {
+                    FileInputStream fileInputStream = new FileInputStream(configFile);
+                    DataInputStream dataInputStream = new DataInputStream(fileInputStream);
+                    ReadStream(dataInputStream);
+                    dataInputStream.close();
+                    fileInputStream.close();
+                } catch (Exception e) {
+
+                }
             }
-        } catch (Exception e) {
+            Unlock();
+        } catch (InterruptedException e) {
 
         }
+        Log.d("LS_TAG", "ReadConfig with " + containterDirs.size() + " dirs");
+        for(File file : containterDirs) {
+            Log.d("LS_TAG", file.toString());
+        }
+        LocalComicSiteHelper.LoadComicDir();
     }
     public void SaveConfig() {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                InnerSaveConfig();
+            }
+        }.start();
+    }
+    private void InnerSaveConfig() {
         try {
-            Log.d("LS_TAG", "Try writing config");
+            Lock();
             File configFile = LocalStorage.GetConfigFile();
             if (configFile != null) {
-                FileOutputStream fileOutputStream = new FileOutputStream(configFile);
-                DataOutputStream dataOutputStream = new DataOutputStream(fileOutputStream);
-                WriteStream(dataOutputStream);
-                dataOutputStream.close();
-                fileOutputStream.close();
+                try {
+                    FileOutputStream fileOutputStream = new FileOutputStream(configFile);
+                    DataOutputStream dataOutputStream = new DataOutputStream(fileOutputStream);
+                    WriteStream(dataOutputStream);
+                    dataOutputStream.close();
+                    fileOutputStream.close();
+                } catch (Exception e) {
+
+                }
             }
-        } catch (Exception e) {
-            Log.d("LS_TAG", "Write fail");
+            Unlock();
+        } catch (InterruptedException e) {
+
         }
     }
 
