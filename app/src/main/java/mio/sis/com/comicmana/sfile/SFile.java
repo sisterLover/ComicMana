@@ -80,7 +80,7 @@ public class SFile {
     }
     static public boolean ChechPermission(Context context) {
         int permission_write = context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-        permission_read = context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+                permission_read = context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
         return permission_write == PackageManager.PERMISSION_GRANTED &&
                 permission_read == PackageManager.PERMISSION_GRANTED;
     }

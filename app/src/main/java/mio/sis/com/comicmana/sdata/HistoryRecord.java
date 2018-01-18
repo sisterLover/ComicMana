@@ -29,6 +29,7 @@ public class HistoryRecord implements ReadWritable {
     }
 
     public void PushRecord(ComicSrc comicSrc) {
+        if(comicSrc.srcType != ComicSrc.SrcType.ST_LOCAL_FILE) return;
         boolean finished = false;
         try {
             Lock();

@@ -56,23 +56,24 @@ public class ComicInfo {
         TEST_COMIC_INFO = new ComicInfo();
         TEST_COMIC_INFO.src.srcType = ComicSrc.SrcType.ST_TEST_SRC;
 
-        TEST_COMIC_INFO.AllocateChapter(3);
+        TEST_COMIC_INFO.AllocateChapter(11);
 
         TEST_COMIC_INFO.name = "Test Comic for Sister";
-        TEST_COMIC_INFO.chapterInfo[1].pageCnt = 7;
+        TEST_COMIC_INFO.chapterInfo[1].pageCnt = 3;
         TEST_COMIC_INFO.chapterInfo[1].title = "EX1";
-        TEST_COMIC_INFO.chapterInfo[2].pageCnt = 8;
+        TEST_COMIC_INFO.chapterInfo[2].pageCnt = 2;
         TEST_COMIC_INFO.chapterInfo[2].title = "SIS2";
-        TEST_COMIC_INFO.chapterInfo[3].pageCnt = 9;
+        TEST_COMIC_INFO.chapterInfo[3].pageCnt = 1;
         TEST_COMIC_INFO.chapterInfo[3].title = "EX3";
-        /*TEST_COMIC_INFO.chapterPages[4] = 6;
-        TEST_COMIC_INFO.chapterPages[5] = 7;
-        TEST_COMIC_INFO.chapterPages[6] = 9;
-        TEST_COMIC_INFO.chapterPages[7] = 8;
-        TEST_COMIC_INFO.chapterPages[8] = 6;
-        TEST_COMIC_INFO.chapterPages[9] = 7;
-        TEST_COMIC_INFO.chapterPages[10] = 8;
-        */
+        TEST_COMIC_INFO.chapterInfo[4].pageCnt = 6;
+        TEST_COMIC_INFO.chapterInfo[5].pageCnt = 7;
+        TEST_COMIC_INFO.chapterInfo[6].pageCnt = 9;
+        TEST_COMIC_INFO.chapterInfo[7].pageCnt = 8;
+        TEST_COMIC_INFO.chapterInfo[8].pageCnt = 6;
+        TEST_COMIC_INFO.chapterInfo[9].pageCnt = 7;
+        TEST_COMIC_INFO.chapterInfo[10].pageCnt = 8;
+        TEST_COMIC_INFO.chapterInfo[11].pageCnt = 3;
+
         return TEST_COMIC_INFO;
     }
 

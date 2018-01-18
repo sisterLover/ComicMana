@@ -1,6 +1,8 @@
 package mio.sis.com.comicmana.mine;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,27 +28,21 @@ public class Pager implements AbstractWelcomeView {
     ImageView[] btns;
     Context context;
     ComicSrc comicSrc;
+    ComicInfo[] comicInfos;
     int pages;
-    final int MAX_PAGES=5;
+    static public final int MAX_PAGES=5;
+
+
     ActionCallback actionCallback;
     //這邊要加一個actioncallback;
 
-    public Pager(ComicSrc comicSrc)
+    public Pager(ComicInfo[] comicInfos)
     {
-        this.comicSrc=comicSrc;
+        this.comicInfos=comicInfos;
+        //this.comicSrc=comicSrc;
         pages=0;
     }
 
-    public void Test()
-    {
-        ComicInfo[] c=new ComicInfo[3];
-        c[0]=ComicInfo.GetTestComicInfo();
-        c[0].name="1";
-        c[1]=ComicInfo.GetTestComicInfo();
-        c[1].name="2";
-        c[2]=ComicInfo.GetTestComicInfo();
-        PostUpdatePager(c);
-    }
 
     @Override
     public View InflateView(Context context) {
@@ -62,7 +58,8 @@ public class Pager implements AbstractWelcomeView {
         viewPager=(ViewPager)mainLayout.findViewById(R.id.main_pager);
         //是call這個cache嗎?
         //ComicInfoCache.EnumComic(this.comicSrc,0,5,new PagerCallBack(this));
-        Test();
+        //Test();
+        PostUpdatePager(this.comicInfos);
         return mainLayout;
     }
 
@@ -78,7 +75,7 @@ public class Pager implements AbstractWelcomeView {
 
     @Override
     public void SetActionCallback(ActionCallback actionCallback) {
-            this.actionCallback=actionCallback;
+        this.actionCallback=actionCallback;
     }
 
 
@@ -110,7 +107,7 @@ public class Pager implements AbstractWelcomeView {
             btns[i-1].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    viewPager.setCurrentItem(p-1,true);
+                    viewPager.setCurrentItem(p - 1, true);
                 }
             });
         }
@@ -160,10 +157,4 @@ public class Pager implements AbstractWelcomeView {
             }
         });
     }
-
-
-
-
-
-
 }

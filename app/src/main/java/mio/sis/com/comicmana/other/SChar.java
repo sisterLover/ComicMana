@@ -65,4 +65,10 @@ public class SChar {
         }
         return false;
     }
+    static public boolean StringInListIgnoreCase(String string, ArrayList<String> list) {
+        for(String listString : list) {
+            if(string.compareToIgnoreCase(listString)==0) return true;
+        }
+        return false;
+    }
 }

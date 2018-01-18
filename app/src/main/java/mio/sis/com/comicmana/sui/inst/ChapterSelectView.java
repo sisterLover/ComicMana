@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -195,7 +196,7 @@ public class ChapterSelectView implements StackableView {
         must call after root have width and height
      */
     private int GetThumbnailHeight() {
-        return Math.min(root.getWidth(), root.getHeight()) / 3;
+        return Math.min(root.getWidth(), root.getHeight());
     }
 
     private void LoadDefaultThumbnail(Context context, ImageView imageView) {
@@ -207,7 +208,7 @@ public class ChapterSelectView implements StackableView {
     private void LoadThumbnail(ImageView imageView, Bitmap bitmap) {
         int width = root.getWidth(), height = GetThumbnailHeight();
         imageView.setLayoutParams(new LinearLayout.LayoutParams(width, height));
-        imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         imageView.setImageBitmap(bitmap);
     }
 
@@ -242,11 +243,22 @@ public class ChapterSelectView implements StackableView {
                 } catch (Exception e) {
 
                 }
+                MainActivity.MAIN_ACTIVITY.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.MAIN_ACTIVITY, "已從媒體櫃隱藏", Toast.LENGTH_LONG).show();
+                    }
+                });
                 encrypting = false;
             }
         }.start();
     }
     private class EncryptCallback implements SFile.EnumFileCallback {
+        private boolean requested;
+
+        public EncryptCallback() {
+            requested = false;
+        }
         @Override
         public void OnFile(File file) {
             if(!file.exists()) return;
@@ -256,10 +268,23 @@ public class ChapterSelectView implements StackableView {
                 if (ext.compareToIgnoreCase(LocalStorage.APP_ALTER_EXTENSION) != 0) {
                     String title = SFile.GetNameWithoutExtension(file);
                     File newFile = new File(file.getParentFile(), title + "." + LocalStorage.APP_ALTER_EXTENSION);
-                    if(!file.canWrite()) {
+                    if(!MainActivity.ssaf.HavePermission(file)) {
                         Log.d("LS_TAG", "cannot write");
+                        //  已經詢問過 permission
+                        if(requested) return;
+
+                        /*Toast.makeText(
+                                MainActivity.MAIN_ACTIVITY,
+                                "請授權存取當前漫畫資料夾所在之SD卡",
+                                Toast.LENGTH_LONG).show();
+                        */
+                        MainActivity.ssaf.RequestPermission();
+
+                        requested = true;
                     }
-                    try {
+                    //  失敗我也不能怎樣
+                    MainActivity.ssaf.Rename(file, newFile);
+                    /*try {
                         if(!newFile.createNewFile()) {
                             Log.d("LS_TAG", "Create Return Fail");
                         }
@@ -267,9 +292,7 @@ public class ChapterSelectView implements StackableView {
                     catch (Exception e) {
                         Log.d("LS_TAG", "CreateFile Exception");
                         Log.d("LS_TAG", e.toString());
-                    }
-                    //  失敗我也不能怎樣
-                    file.renameTo(newFile);
+                    }*/
                 }
             }
         }
@@ -287,11 +310,23 @@ public class ChapterSelectView implements StackableView {
                 } catch (Exception e) {
 
                 }
+                MainActivity.MAIN_ACTIVITY.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.MAIN_ACTIVITY, "已從媒體櫃顯示", Toast.LENGTH_LONG).show();
+                    }
+                });
                 decrypting = false;
             }
         }.start();
     }
     private class DecryptCallback implements SFile.EnumFileCallback {
+        private boolean requested;
+
+        public DecryptCallback() {
+            requested = false;
+        }
+
         @Override
         public void OnFile(File file) {
             if(!file.exists()) return;
@@ -299,12 +334,18 @@ public class ChapterSelectView implements StackableView {
             if (ext == null) return;
             if (ext.compareToIgnoreCase(LocalStorage.APP_ALTER_EXTENSION) == 0) {
                 String title = SFile.GetNameWithoutExtension(file);
-                Bitmap bitmap = ImageLib.LoadFile(file);
-                if (bitmap == null) return;
-                File orgFile = new File(file.getParentFile(), title + ".png");
-                if (ImageLib.SaveFile(orgFile, bitmap)) {
-                    file.delete();
+                String orgExt = ImageLib.GetRenameExtension(file);
+                if(orgExt == null) {
+                    orgExt = "jpg";
                 }
+                File orgFile = new File(file.getParentFile(), title + "." + orgExt);
+                if(!MainActivity.ssaf.HavePermission(file)) {
+                    if(requested) return;
+
+                    MainActivity.ssaf.RequestPermission();
+                    requested = true;
+                }
+                MainActivity.ssaf.Rename(file, orgFile);
             }
         }
     }

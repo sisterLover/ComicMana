@@ -1,5 +1,6 @@
 package mio.sis.com.comicmana.sfile;
 
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -10,9 +11,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import mio.sis.com.comicmana.other.SChar;
+import mio.sis.com.comicmana.scache.ImageCache;
 import mio.sis.com.comicmana.sdata.ComicConfig;
 import mio.sis.com.comicmana.sdata.ComicInfo;
+import mio.sis.com.comicmana.sdata.ComicPosition;
 import mio.sis.com.comicmana.sdata.ComicSrc;
+import mio.sis.com.comicmana.snet.NetImageHelper;
 
 /**
  * Created by Administrator on 2018/1/2.
@@ -47,11 +51,12 @@ public class LocalStorage {
     static final String APP_CACHE_DIR = "Cache";
     static final String CACHE_CONFIG_FILE = "cache.rec";
     static final String HISTORY_FILE = "history.rec";
+    static final String SSAF_FILE = "ssaf.rec";
 
     static final String COMIC_THUMBNAIL_FILE = "thumbnail";
     static final String COMIC_CONFIG_FILE = "comic.cfg";
 
-    static public final String APP_ALTER_EXTENSION = "cmp";    //  comic mana picture
+    static public final String APP_ALTER_EXTENSION = "cmp";    //  為了支援 MIME type
     static public final String[] SUPPORT_EXTENSION = {"png" , "jpg", "jpeg", APP_ALTER_EXTENSION};
 
     static public final int
@@ -108,7 +113,7 @@ public class LocalStorage {
     /*
         comicInfo.src 指向了 local storage，以此讀取漫畫資訊
      */
-    static public void LoadComicInfo(ComicInfo comicInfo) {
+    static public void LoadComicInfo(final ComicInfo comicInfo) {
         if(comicInfo.src.srcType != ComicSrc.SrcType.ST_LOCAL_FILE) return;
         File comicPath = new File(comicInfo.src.path);
         File[] childs = comicPath.listFiles();
@@ -168,7 +173,21 @@ public class LocalStorage {
             如果沒有縮圖，就用第一章第一頁
          */
         if(comicInfo.thumbnail==null) {
+            ComicPosition position = new ComicPosition();
+            position.chapter = 1;
+            position.page = 1;
+            //  LoadInfo 會在非 UI thread 執行，且希望函數結束時 thumbnail 已經載入，所以呼叫 Inner 函數
+            ImageCache.InnerGetRawComicPage(comicInfo.src, position, new NetImageHelper.ComicPageCallback() {
+                @Override
+                public void PageRecieve(Bitmap bitmap) {
+                    comicInfo.thumbnail = bitmap;
+                }
 
+                @Override
+                public void UpdateProgress(int percent) {
+                    return;
+                }
+            });
         }
     }
     /*
@@ -319,6 +338,11 @@ public class LocalStorage {
         UpdatePath();
         if(!pathAvailable) return null;
         return new File(basePath, HISTORY_FILE);
+    }
+    static public File GetSSAFFile() {
+        UpdatePath();
+        if(!pathAvailable) return null;
+        return new File(basePath, SSAF_FILE);
     }
     static public File GetComicConfigFile(File comicPath) {
         return new File(comicPath, COMIC_CONFIG_FILE);

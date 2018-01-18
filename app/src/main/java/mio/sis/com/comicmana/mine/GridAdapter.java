@@ -102,16 +102,18 @@ public class GridAdapter extends BaseAdapter {
             titleParams.height = 15;
             viewHolder.title.setLayoutParams(titleParams);
             */
-            viewHolder.title.setText(comicInfo[position].name);
-            viewHolder.title.setSelected(true);
             convertView.setTag(viewHolder);
         } else
         {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         viewHolder.title.setText(comicInfo[position].name);
+        viewHolder.title.setSelected(true);
         //viewHolder.pages.setText("頁數: "+comicInfo[position].chapterPages);
-        // viewHolder.image.setImageBitmap(comicInfo[position].thumbnail);
+        if(comicInfo[position].thumbnail != null) {
+            viewHolder.image.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            viewHolder.image.setImageBitmap(comicInfo[position].thumbnail);
+        }
         return convertView;
     }
 

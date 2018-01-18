@@ -28,10 +28,12 @@ public class ManaConfig implements ReadWritable {
     private void Unlock() { semaphore.release(); }
 
     public ArrayList<File> containterDirs;
+    public File safeModeComicDir;
 
 
     public ManaConfig() {
         containterDirs = new ArrayList<>();
+        safeModeComicDir = null;
     }
 
     public void LoadConfig() {
@@ -109,6 +111,7 @@ public class ManaConfig implements ReadWritable {
         for(File file : containterDirs) {
             SFile.WriteStringToStream(file.toString(), stream);
         }
+        SFile.WriteStringToStream(safeModeComicDir.toString(), stream);
     }
 
     @Override
@@ -119,5 +122,7 @@ public class ManaConfig implements ReadWritable {
             String string = SFile.ReadStringFromStream(stream);
             containterDirs.add(new File(string));
         }
+        String string = SFile.ReadStringFromStream(stream);
+        safeModeComicDir = new File(string);
     }
 }

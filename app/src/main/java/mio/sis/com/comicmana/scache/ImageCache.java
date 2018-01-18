@@ -46,11 +46,11 @@ public class ImageCache {
             @Override
             public void run() {
                 super.run();
-                InnerRawGetComicPage(src, position, callback);
+                InnerGetRawComicPage(src, position, callback);
             }
         }.start();
     }
-    static private void InnerRawGetComicPage(ComicSrc src, ComicPosition position, NetImageHelper.ComicPageCallback callback) {
+    static public void InnerGetRawComicPage(ComicSrc src, ComicPosition position, NetImageHelper.ComicPageCallback callback) {
         switch (src.srcType) {
             case ComicSrc.SrcType.ST_TEST_SRC:
                 //  測試漫畫不用快取

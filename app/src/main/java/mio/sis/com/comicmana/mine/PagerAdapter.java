@@ -48,7 +48,10 @@ public class PagerAdapter extends android.support.v4.view.PagerAdapter {
 
         View itemView = layoutInflater.inflate(R.layout.viewpager_item, container, false);
         ImageView imageView = (ImageView)itemView.findViewById(R.id.pageImage);
-        //imageView.setImageBitmap(comicInfos[position].thumbnail);
+        if(comicInfos[position].thumbnail != null) {
+            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            imageView.setImageBitmap(comicInfos[position].thumbnail);
+        }
 
         (container).addView(itemView);
 

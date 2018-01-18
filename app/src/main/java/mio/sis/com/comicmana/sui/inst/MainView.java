@@ -2,6 +2,7 @@ package mio.sis.com.comicmana.sui.inst;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +12,13 @@ import android.widget.TextView;
 
 import mio.sis.com.comicmana.R;
 import mio.sis.com.comicmana.mine.Grid;
+import mio.sis.com.comicmana.mine.Pager;
+import mio.sis.com.comicmana.scache.ComicInfoCache;
 import mio.sis.com.comicmana.sdata.ComicInfo;
 import mio.sis.com.comicmana.sdata.ComicSrc;
+import mio.sis.com.comicmana.snet.NetSiteHelper;
 import mio.sis.com.comicmana.sui.intf.AbstractComicGrid;
+import mio.sis.com.comicmana.sui.intf.AbstractWelcomeView;
 import mio.sis.com.comicmana.sui.intf.StackableView;
 import mio.sis.com.comicmana.sui.intf.ViewStack;
 
@@ -29,9 +34,10 @@ public class MainView implements StackableView {
 
     private Context context;
     private ViewStack viewStack;
-    private LinearLayout root, grid_parent, top_bar_parent;
+    private LinearLayout root, grid_parent, search_bar_parent;
     private int currentState;
     private Button historyButton, localButton, netButton;
+    private Pager pager;
 
     public MainView(ViewStack viewStack) {
         this.viewStack = viewStack;
@@ -45,7 +51,7 @@ public class MainView implements StackableView {
         LayoutInflater inflater = LayoutInflater.from(context);
         root = (LinearLayout) inflater.inflate(R.layout.main_view_layout, null);
 
-        top_bar_parent = root.findViewById(R.id.main_view_top_bar_parent);
+        search_bar_parent = root.findViewById(R.id.main_view_search_bar_parent);
 
         grid_parent = root.findViewById(R.id.main_view_grid_parent);
 
@@ -88,8 +94,7 @@ public class MainView implements StackableView {
 
     @Override
     public void FreeView() {
-        top_bar_parent.removeAllViews();
-        top_bar_parent = null;
+        search_bar_parent = null;
 
         grid_parent.removeAllViews();
         grid_parent = null;
@@ -108,7 +113,37 @@ public class MainView implements StackableView {
     }
 
     private void InflateCurrentView() {
+        ComicSrc comicSrc = new ComicSrc();
         if (currentState == STATE_INI) {
+            comicSrc.srcType = ComicSrc.SrcType.ST_HISTORY;
+            ComicInfoCache.EnumComic(comicSrc, 0, Pager.MAX_PAGES, new NetSiteHelper.EnumCallback() {
+                @Override
+                public void ComicDiscover(final ComicInfo[] info) {
+                    if(root == null) {
+                        //  表示在 ComicDiscover 被呼叫之前，使用者已經離開 MainView
+                        return;
+                    }
+                    root.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            pager = new Pager(info);
+                            pager.SetActionCallback(new AbstractWelcomeView.ActionCallback() {
+                                @Override
+                                public void OnComicClick(ComicInfo comicInfo) {
+                                    MV_OnComicClick(comicInfo);
+                                }
+                            });
+                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.MATCH_PARENT
+                            );
+                            View view = pager.InflateView(context);
+                            view.setLayoutParams(params);
+                            grid_parent.addView(pager.GetView());
+                        }
+                    });
+                }
+            });
             ResetButton(historyButton);
             ResetButton(localButton);
             ResetButton(netButton);
@@ -118,12 +153,12 @@ public class MainView implements StackableView {
         textView.setLayoutParams(new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
-        ComicSrc comicSrc = new ComicSrc();
         switch (currentState) {
             case STATE_HISTORY:
                 textView.setText("最近瀏覽");
                 comicSrc.srcType = ComicSrc.SrcType.ST_HISTORY;
 
+                search_bar_parent.setVisibility(View.GONE);
                 HighLightButton(historyButton);
                 ResetButton(localButton);
                 ResetButton(netButton);
@@ -132,6 +167,7 @@ public class MainView implements StackableView {
                 textView.setText("本地漫畫");
                 comicSrc.srcType = ComicSrc.SrcType.ST_LOCAL_FILE;
 
+                search_bar_parent.setVisibility(View.VISIBLE);
                 ResetButton(historyButton);
                 HighLightButton(localButton);
                 ResetButton(netButton);
@@ -140,6 +176,7 @@ public class MainView implements StackableView {
                 textView.setText("線上漫畫");
                 comicSrc.srcType = ComicSrc.SrcType.ST_NET_WNACG;
 
+                search_bar_parent.setVisibility(View.GONE);
                 ResetButton(historyButton);
                 ResetButton(localButton);
                 HighLightButton(netButton);
