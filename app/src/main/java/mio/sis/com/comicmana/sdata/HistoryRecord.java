@@ -1,5 +1,7 @@
 package mio.sis.com.comicmana.sdata;
 
+import android.os.SystemClock;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -19,19 +21,22 @@ import mio.sis.com.comicmana.sfile.ReadWritable;
 public class HistoryRecord implements ReadWritable {
     static private final int MAX_RECORD = 200;
     static private Semaphore semaphore = new Semaphore(1);
-    private void Lock() throws InterruptedException { semaphore.acquire(); }
-    private void Unlock() { semaphore.release(); }
+    static private void Lock() throws InterruptedException { semaphore.acquire(); }
+    static private void Unlock() { semaphore.release(); }
 
     private ArrayList<ComicSrc> comicSrcs;
+    private boolean initialLoad;
 
     public HistoryRecord() {
         comicSrcs = new ArrayList<>();
+        initialLoad = false;
     }
 
     public void PushRecord(ComicSrc comicSrc) {
         if(comicSrc.srcType != ComicSrc.SrcType.ST_LOCAL_FILE) return;
         boolean finished = false;
         try {
+            while(!initialLoad) SystemClock.sleep(100);
             Lock();
             for(int i=0;i<comicSrcs.size();++i) {
                 if(comicSrcs.get(i).Equal(comicSrc)) {
@@ -59,11 +64,14 @@ public class HistoryRecord implements ReadWritable {
     public ComicSrc[] GetHistory() {
         ComicSrc[] result = null;
         try {
+            while(!initialLoad) SystemClock.sleep(100);
             Lock();
             int size = comicSrcs.size();
-            result = new ComicSrc[size];
-            for(int i=0;i<size;++i) {
-                result[i] = comicSrcs.get(size - i - 1);
+            if(size != 0) {
+                result = new ComicSrc[size];
+                for (int i = 0; i < size; ++i) {
+                    result[i] = comicSrcs.get(size - i - 1);
+                }
             }
             Unlock();
         }
@@ -85,6 +93,7 @@ public class HistoryRecord implements ReadWritable {
     private void InnerLoadRecrod() {
         try {
             Lock();
+            initialLoad = true;
             File historyFile = LocalStorage.GetHistoryFile();
             if (historyFile != null) {
                 try {

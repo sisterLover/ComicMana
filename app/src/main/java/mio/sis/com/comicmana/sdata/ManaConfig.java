@@ -65,10 +65,10 @@ public class ManaConfig implements ReadWritable {
         } catch (InterruptedException e) {
 
         }
-        Log.d("LS_TAG", "ReadConfig with " + containterDirs.size() + " dirs");
+        /*Log.d("LS_TAG", "ReadConfig with " + containterDirs.size() + " dirs");
         for(File file : containterDirs) {
             Log.d("LS_TAG", file.toString());
-        }
+        }*/
         LocalComicSiteHelper.LoadComicDir();
     }
     public void SaveConfig() {

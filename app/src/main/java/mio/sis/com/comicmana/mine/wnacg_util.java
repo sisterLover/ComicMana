@@ -28,12 +28,6 @@ public class wnacg_util {
             connection.connect();
             InputStream input = connection.getInputStream();
             Bitmap bitmap = BitmapFactory.decodeStream(input);
-            if(bitmap != null) {
-                Log.d("LS_TAG", "DL success");
-            }
-            else {
-                Log.d("LS_TAG", "DL fail");
-            }
             return bitmap;
         }
         catch (IOException e)

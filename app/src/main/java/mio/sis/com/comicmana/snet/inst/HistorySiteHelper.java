@@ -20,6 +20,10 @@ public class HistorySiteHelper implements NetSiteHelper {
             return;
         }
         ComicSrc[] comicSrcs = MainActivity.historyRecord.GetHistory();
+        if(comicSrcs == null) {
+            callback.ComicDiscover(null);
+            return;
+        }
         ArrayList<ComicInfo> comicInfos = new ArrayList<>();
         for(int i=0;i<comicSrcs.length;++i) {
             if(ComicInfoCache.IsComicAvailable(comicSrcs[i])) {

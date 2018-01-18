@@ -64,9 +64,6 @@ public class Grid implements AbstractComicGrid{
         }
     }
 
-
-
-
     public void SetGrid() {
         if(searchString.length() !=0) {
             if(src.srcType == ComicSrc.SrcType.ST_LOCAL_FILE) {

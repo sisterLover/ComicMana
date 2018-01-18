@@ -1,6 +1,7 @@
 package mio.sis.com.comicmana.mine;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +55,11 @@ public class PagerAdapter extends android.support.v4.view.PagerAdapter {
 
         View itemView = layoutInflater.inflate(R.layout.viewpager_item, container, false);
         ImageView imageView = (ImageView)itemView.findViewById(R.id.pageImage);
+        imageView.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+
+        Log.d("LS_TAG", "Pos = " + String.valueOf(position) + " Flag = " + String.valueOf(flag));
         if(comicInfos[position].thumbnail != null) {
             imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             imageView.setImageBitmap(comicInfos[position].thumbnail);

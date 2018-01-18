@@ -13,7 +13,7 @@ import mio.sis.com.comicmana.snet.inst.LocalComicSiteHelper;
 
 public class ComicInfoCache {
     static private LocalComicSiteHelper localComicSiteHelper = new LocalComicSiteHelper();
-    static private HistorySiteHelper historySiteHelper = new HistorySiteHelper();
+    static public HistorySiteHelper historySiteHelper = new HistorySiteHelper();
     static private Web_wnacg_ComicInfo wnacgSitHelper = new Web_wnacg_ComicInfo();
     /*
         ComicGrid 應該呼叫此函數來取得 comicInfo

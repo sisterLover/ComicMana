@@ -143,32 +143,33 @@ public class MainView implements StackableView {
         ComicSrc comicSrc = new ComicSrc();
         if (currentState == STATE_INI) {
             comicSrc.srcType = ComicSrc.SrcType.ST_HISTORY;
-            ComicInfoCache.EnumComic(comicSrc, 0, Pager.MAX_PAGES, new NetSiteHelper.EnumCallback() {
+            Log.d("LS_TAG", "EnumComic");
+            ComicInfoCache.historySiteHelper.EnumComic(comicSrc, 0, Pager.MAX_PAGES, new NetSiteHelper.EnumCallback() {
                 @Override
-                public void ComicDiscover(final ComicInfo[] info) {
+                public void ComicDiscover(ComicInfo[] info) {
+                    Log.d("LS_TAG", "EnumReturn");
                     if(root == null) {
                         //  表示在 ComicDiscover 被呼叫之前，使用者已經離開 MainView
+                        Log.d("LS_TAG", "root null");
                         return;
                     }
-                    root.post(new Runnable() {
+                    Log.d("LS_TAG", "run");
+                    if (currentState != STATE_INI) return;
+                    //Log.d("LS_TAG", "new pager " + info.length + " info");
+                    pager = new Pager(info);
+                    pager.SetActionCallback(new AbstractWelcomeView.ActionCallback() {
                         @Override
-                        public void run() {
-                            pager = new Pager(info);
-                            pager.SetActionCallback(new AbstractWelcomeView.ActionCallback() {
-                                @Override
-                                public void OnComicClick(ComicInfo comicInfo) {
-                                    MV_OnComicClick(comicInfo);
-                                }
-                            });
-                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                                    ViewGroup.LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.MATCH_PARENT
-                            );
-                            View view = pager.InflateView(context);
-                            view.setLayoutParams(params);
-                            grid_parent.addView(pager.GetView());
+                        public void OnComicClick(ComicInfo comicInfo) {
+                            MV_OnComicClick(comicInfo);
                         }
                     });
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT
+                    );
+                    View view = pager.InflateView(context);
+                    view.setLayoutParams(params);
+                    grid_parent.addView(pager.GetView());
                 }
             });
             ResetButton(historyButton);

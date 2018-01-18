@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -57,11 +58,8 @@ public class Pager implements AbstractWelcomeView {
             int id=context.getResources().getIdentifier("viewpage_btn"+i, "id", context.getPackageName());
             btns[i-1]=(ImageView)mainLayout.findViewById(id);
         }
-        viewPager=(ViewPager)mainLayout.findViewById(R.id.main_pager);
-        //是call這個cache嗎?
-        //ComicInfoCache.EnumComic(this.comicSrc,0,5,new PagerCallBack(this));
-        //Test();
-        PostUpdatePager(this.comicInfos);
+        viewPager = mainLayout.findViewById(R.id.main_pager);
+        UpdatePager();
         return mainLayout;
     }
 
@@ -79,19 +77,7 @@ public class Pager implements AbstractWelcomeView {
     public void SetActionCallback(ActionCallback actionCallback) {
         this.actionCallback=actionCallback;
     }
-
-
-
-    public void PostUpdatePager(final  ComicInfo[] comicInfos)
-    {
-        mainLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                UpdatePager(comicInfos);
-            }
-        });
-    }
-    public void UpdatePager(final ComicInfo[] comicInfos)
+    public void UpdatePager()
     {
         if(comicInfos==null||comicInfos.length>MAX_PAGES||comicInfos.length<0) {
             pages = 0;
@@ -141,17 +127,15 @@ public class Pager implements AbstractWelcomeView {
                 }
             });
             viewPager.setCurrentItem(0);
-
+            Log.d("LS_TAG", "Normal Pager");
         }
-        else
-        {
-            ComicInfo[] temp=new ComicInfo[1];
-            temp[0]=new ComicInfo();
-            temp[0].thumbnail= BitmapFactory.decodeResource(context.getResources(),R.drawable.open);
-            PagerAdapter pagerAdapter=new PagerAdapter(temp,context);
+        else {
+            ComicInfo[] temp = new ComicInfo[1];
+            temp[0] = new ComicInfo();
+            temp[0].thumbnail = BitmapFactory.decodeResource(context.getResources(), R.drawable.open);
+            PagerAdapter pagerAdapter = new PagerAdapter(temp, context);
+            Log.d("LS_TAG", "Abnormal Pager");
             viewPager.setAdapter(pagerAdapter);
-
-
         }
 
 
