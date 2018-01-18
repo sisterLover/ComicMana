@@ -22,7 +22,6 @@ import mio.sis.com.comicmana.snet.NetImageHelper;
 
 public class Web_wnacg_ComicInner implements NetImageHelper {
 
-    wnacg_util wu;
     public String url;
 
 
@@ -51,9 +50,9 @@ public class Web_wnacg_ComicInner implements NetImageHelper {
 
             try {
                 //第幾頁
-                int pages=(position.page-1)/wu.per+1;
+                int pages=(position.page-1)/wnacg_util.per+1;
                 //該頁第幾格
-                int index=position.page-((pages-1)*wu.per);
+                int index=position.page-((pages-1)*wnacg_util.per);
 
 
                 url = src.path.replace("index",",");
@@ -86,7 +85,7 @@ public class Web_wnacg_ComicInner implements NetImageHelper {
                         } else {
                             if(ing==index)
                             {
-                                callback.PageRecieve(wu.getBitmapFromURL(wu.WebSite+str));
+                                callback.PageRecieve(wnacg_util.getBitmapFromURL(wnacg_util.WebSite+str));
                                 break;
                             }
                             else

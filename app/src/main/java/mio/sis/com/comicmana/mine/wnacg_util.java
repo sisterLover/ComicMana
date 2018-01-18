@@ -15,7 +15,7 @@ import java.net.URL;
 public class wnacg_util {
     public static final String WebTitle="紳士漫畫";
     public static final String WebSite="https://www.wnacg.org";
-    public final int per=12;
+    public static final int per=12;
     //從Url抓取圖片
     public static Bitmap getBitmapFromURL(String imageUrl)
     {

@@ -40,7 +40,6 @@ public class Web_wnacg_ComicInfo implements NetSiteHelper {
         return false;
     }
 
-    wnacg_util wu;
     private String url;
 
 
@@ -61,7 +60,7 @@ public class Web_wnacg_ComicInfo implements NetSiteHelper {
         public void run() {
             super.run();
             //爬出陣列 info
-            ComicInfo[] info = new ComicInfo[wu.per];
+            ComicInfo[] info = new ComicInfo[wnacg_util.per];
             int index=0;
             url=(startFrom<1)?"https://www.wnacg.org/albums-index-page-1.html":"https://www.wnacg.org/albums-index-page-"+startFrom+".html";
 
@@ -94,7 +93,7 @@ public class Web_wnacg_ComicInfo implements NetSiteHelper {
 
                     //封面
                     String tempUrl=data.select("img").attr("src");
-                    comicInfo.thumbnail=wu.getBitmapFromURL(wu.WebSite+tempUrl);
+                    comicInfo.thumbnail=wnacg_util.getBitmapFromURL(wnacg_util.WebSite+tempUrl);
 
                     info[index]=comicInfo;
                     index++;
