@@ -131,7 +131,7 @@ public class ChapterSelectView implements StackableView {
             optionParent.addView(decryptButton);
         }
         else {
-            Button downloadButton = CreateButton(inflater, "下載");
+            /*Button downloadButton = CreateButton(inflater, "下載");
             LinearLayout.LayoutParams params =
                     new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
             downloadButton.setLayoutParams(params);
@@ -141,7 +141,7 @@ public class ChapterSelectView implements StackableView {
                     OnDownloadClick();
                 }
             });
-            optionParent.addView(downloadButton);
+            optionParent.addView(downloadButton);*/
         }
         return root;
     }

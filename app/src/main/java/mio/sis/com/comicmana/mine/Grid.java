@@ -8,7 +8,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,11 +28,14 @@ public class Grid implements AbstractComicGrid{
     protected static final float FLIP_DISTANCE=50;
     protected static final int Row=3;
     View mainLayout;
+    ImageView Left;
+    ImageView Right;
     GridView gridView;
     GestureDetector gestureDetector;
     Context context;
     ComicSrc src;
     int pages;
+    int current;
     ActionCallback actionCallback;
     String searchString;
 
@@ -39,8 +44,11 @@ public class Grid implements AbstractComicGrid{
         this.src=src;
         pages=1;
         searchString = "";
+        current=0;
     }
 
+
+    /*
 
     class Mlistener extends GestureDetector.SimpleOnGestureListener
     {
@@ -63,6 +71,9 @@ public class Grid implements AbstractComicGrid{
             return false;
         }
     }
+
+
+*/
 
     public void SetGrid() {
         if(searchString.length() !=0) {
@@ -104,6 +115,7 @@ public class Grid implements AbstractComicGrid{
 
 
         if(Flag) {
+            current=comicInfos.length;
             TextView textView=(TextView)mainLayout.findViewById(R.id.grid_page_text);
             textView.setText("第"+pages+"頁");
             gridView=(GridView)mainLayout.findViewById(R.id.main_grid);
@@ -111,12 +123,14 @@ public class Grid implements AbstractComicGrid{
             GridAdapter adapter = new GridAdapter(comicInfos, context);
             adapter.SetFlag(Flag);
             gridView.setAdapter(adapter);
+            /*
             gridView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
                     return gestureDetector.onTouchEvent(motionEvent);
                 }
             });
+            */
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -140,10 +154,39 @@ public class Grid implements AbstractComicGrid{
         }
     }
     @Override
-    public View InflateView(Context context) {
+    public View InflateView(final Context context) {
         LayoutInflater inflater = LayoutInflater.from(context);
         mainLayout = inflater.inflate(R.layout.grid_view, null);
-        gestureDetector = new GestureDetector(context, new Mlistener());
+        //gestureDetector = new GestureDetector(context, new Mlistener());
+        Left=(ImageView)mainLayout.findViewById(R.id.left);
+        Right=(ImageView)mainLayout.findViewById(R.id.right);
+
+        Left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(pages>1) {
+                    pages--;
+                    SetGrid();
+                }
+                else
+                {
+                    Toast.makeText(context, "無法繼續翻頁", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        Right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(current==12) {
+                    pages++;
+                    SetGrid();
+                }
+                else
+                {
+                    Toast.makeText(context, "無法繼續翻頁", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         this.context = context;
         SetGrid();
         return mainLayout;

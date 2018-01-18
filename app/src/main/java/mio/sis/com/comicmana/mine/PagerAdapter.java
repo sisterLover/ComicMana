@@ -59,7 +59,7 @@ public class PagerAdapter extends android.support.v4.view.PagerAdapter {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
 
-        Log.d("LS_TAG", "Pos = " + String.valueOf(position) + " Flag = " + String.valueOf(flag));
+        //Log.d("LS_TAG", "Pos = " + String.valueOf(position) + " Flag = " + String.valueOf(flag));
         if(comicInfos[position].thumbnail != null) {
             imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             imageView.setImageBitmap(comicInfos[position].thumbnail);

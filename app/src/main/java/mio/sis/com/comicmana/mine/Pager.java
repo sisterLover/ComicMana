@@ -127,14 +127,14 @@ public class Pager implements AbstractWelcomeView {
                 }
             });
             viewPager.setCurrentItem(0);
-            Log.d("LS_TAG", "Normal Pager");
+            //Log.d("LS_TAG", "Normal Pager");
         }
         else {
             ComicInfo[] temp = new ComicInfo[1];
             temp[0] = new ComicInfo();
             temp[0].thumbnail = BitmapFactory.decodeResource(context.getResources(), R.drawable.open);
             PagerAdapter pagerAdapter = new PagerAdapter(temp, context);
-            Log.d("LS_TAG", "Abnormal Pager");
+            //Log.d("LS_TAG", "Abnormal Pager");
             viewPager.setAdapter(pagerAdapter);
         }
 
