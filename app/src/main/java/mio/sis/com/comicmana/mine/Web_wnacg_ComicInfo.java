@@ -77,7 +77,7 @@ public class Web_wnacg_ComicInfo implements NetSiteHelper {
                     comicInfo.chapterInfo[1].title=comicInfo.name;
 
                     //來源
-                    comicInfo.src.srcType=ComicSrc.SrcType.ST_NET_EX;
+                    comicInfo.src.srcType=ComicSrc.SrcType.ST_NET_WNACG;
                     comicInfo.src.path=data.select("a").attr("abs:href").toString();
 
                     //章節

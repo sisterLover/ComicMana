@@ -95,7 +95,11 @@ public class ImageCache {
                 );
                 break;
             case ComicSrc.SrcType.ST_NET_WNACG:
-                wnacgComicImageHelper.GetComicPage(src, position, new DefaultImageHelper(page));
+                wnacgComicImageHelper.GetComicPage(
+                        src,
+                        position,
+                        new ImageCacheImageHelper(page, src, position)
+                );
                 break;
             default:
                 page.PostError();

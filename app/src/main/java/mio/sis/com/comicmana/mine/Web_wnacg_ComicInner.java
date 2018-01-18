@@ -95,11 +95,10 @@ public class Web_wnacg_ComicInner implements NetImageHelper {
                         }
                     }
                 }
-                callback.UpdateProgress(100);
             }
             catch(IOException e)
             {
-                callback.UpdateProgress(-1);
+                callback.PageRecieve(null);
             }
 
         }

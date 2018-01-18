@@ -2,6 +2,7 @@ package mio.sis.com.comicmana.mine;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +28,12 @@ public class wnacg_util {
             connection.connect();
             InputStream input = connection.getInputStream();
             Bitmap bitmap = BitmapFactory.decodeStream(input);
+            if(bitmap != null) {
+                Log.d("LS_TAG", "DL success");
+            }
+            else {
+                Log.d("LS_TAG", "DL fail");
+            }
             return bitmap;
         }
         catch (IOException e)
