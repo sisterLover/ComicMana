@@ -25,15 +25,15 @@ public class LocalComicSiteHelper implements NetSiteHelper {
     static private void Lock() throws InterruptedException { semaphore.acquire(); }
     static private void Unlock() { semaphore.release(); }
     @Override
-    public void EnumComic(final ComicSrc src, final int startFrom, final int length, final EnumCallback callback) {
+    /*public void EnumComic(final ComicSrc src, final int startFrom, final int length, final EnumCallback callback) {
         new Thread() {
             @Override
             public void run() {
                 InnerEnumComic(src, startFrom, length, callback);
             }
         }.start();
-    }
-    private void InnerEnumComic(ComicSrc src, int startFrom, int length, EnumCallback callback) {
+    }*/
+    public void /*Inner*/EnumComic(ComicSrc src, int startFrom, int length, EnumCallback callback) {
         if(src.srcType != ComicSrc.SrcType.ST_LOCAL_FILE) {
             callback.ComicDiscover(null);
             return;
@@ -61,6 +61,40 @@ public class LocalComicSiteHelper implements NetSiteHelper {
             result[i] = new ComicInfo();
             result[i].src.srcType = ComicSrc.SrcType.ST_LOCAL_FILE;
             result[i].src.path = resultFiles[i].toString();
+            LocalStorage.LoadComicInfo(result[i]);
+        }
+        callback.ComicDiscover(result);
+    }
+    public void EnumComic(ComicSrc src, int startFrom, int length, String string, EnumCallback callback) {
+        if (src.srcType != ComicSrc.SrcType.ST_LOCAL_FILE) {
+            callback.ComicDiscover(null);
+            return;
+        }
+        ArrayList<File> resultFiles = new ArrayList<>();
+        try {
+            Lock();
+            for (int i = 0; i < comicDirs.size(); ++i) {
+                File file = comicDirs.get(i);
+                String fileName = file.getName();
+                if (fileName.contains(string)) {
+                    resultFiles.add(file);
+                    if (resultFiles.size() >= startFrom + length) break;
+                }
+            }
+            Unlock();
+        } catch (InterruptedException e) {
+
+        }
+        int resultLength = Math.min(length, resultFiles.size() - startFrom);
+        if (resultLength <= 0 || resultFiles.size() == 0) {
+            callback.ComicDiscover(null);
+            return;
+        }
+        ComicInfo[] result = new ComicInfo[resultLength];
+        for (int i = 0; i < resultLength; ++i) {
+            result[i] = new ComicInfo();
+            result[i].src.srcType = ComicSrc.SrcType.ST_LOCAL_FILE;
+            result[i].src.path = resultFiles.get(startFrom + i).toString();
             LocalStorage.LoadComicInfo(result[i]);
         }
         callback.ComicDiscover(result);

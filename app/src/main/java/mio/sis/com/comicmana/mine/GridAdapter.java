@@ -29,14 +29,22 @@ public class GridAdapter extends BaseAdapter {
     final int imagefactor=6;
     private int width;
     private int height;
+    private boolean flag;
     static class ViewHolder
     {
         public ImageView image;
         public TextView title;
     }
+
+    public void SetFlag(boolean b)
+    {
+        flag=b;
+    }
+
     public GridAdapter( ComicInfo[] comicInfo, Context context)
     {
         super();
+        flag=true;
         this.comicInfo=comicInfo;
         layoutInflater=LayoutInflater.from(context);
 
@@ -86,10 +94,15 @@ public class GridAdapter extends BaseAdapter {
             int w=width/col;
             int h=height/row;
             //AbsListView.LayoutParams lp=new AbsListView.LayoutParams(w,(h*viewfactor)/10);
-            AbsListView.LayoutParams lp=new AbsListView.LayoutParams(parent.getWidth()/3, parent.getHeight()/4);
+            AbsListView.LayoutParams lp;
+            if(flag) {
+                lp = new AbsListView.LayoutParams(parent.getWidth() / 3, parent.getHeight() / 4);
+            }
+            else {
+                lp = new AbsListView.LayoutParams(parent.getWidth(), parent.getHeight());
+            }
             convertView.setLayoutParams(lp);
-
-            ViewGroup.LayoutParams ps = viewHolder.image.getLayoutParams();
+            //ViewGroup.LayoutParams ps = viewHolder.image.getLayoutParams();
             /*ps.width = w*imagefactor/10;
             ps.height = h*imagefactor/10;
             */

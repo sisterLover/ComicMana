@@ -227,7 +227,7 @@ public class ChapterSelectView implements StackableView {
     }
 
     private void PushSSZPView() {
-        viewStack.Push(new ComicView(viewStack, comicInfo));
+        viewStack.Push(new ComicView(viewStack, comicInfo, false));
     }
 
     private void OnEncryptClick() {

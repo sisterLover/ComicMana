@@ -7,7 +7,9 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 
+import mio.sis.com.comicmana.MainActivity;
 import mio.sis.com.comicmana.sfile.LocalStorage;
 
 /**
@@ -114,20 +116,35 @@ public class ComicInfo {
         }
     }
     public void TryWriteComicConfig() {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                InnerTryWriteComicConfig();
+            }
+        }.start();
+    }
+    private void InnerTryWriteComicConfig() {
         if(src.srcType != ComicSrc.SrcType.ST_LOCAL_FILE) return;
 
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(LocalStorage.GetComicConfigFile(new File(src.path)));
-            DataOutputStream dataOutputStream = new DataOutputStream(fileOutputStream);
-            ComicConfig comicConfig = new ComicConfig();
-            comicConfig.name = name;
-            comicConfig.lastOpenTime = lastOpenTime;
-            comicConfig.lastPosition = lastPosition;
+            File comicConfigFile = LocalStorage.GetComicConfigFile(new File(src.path));
+            if(!MainActivity.ssaf.HavePermission(comicConfigFile)) {
+                MainActivity.ssaf.RequestPermission();
+            }
+            OutputStream outputStream = MainActivity.ssaf.OpenOutputStream(comicConfigFile);
+            if(outputStream!=null) {
+                DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
+                ComicConfig comicConfig = new ComicConfig();
+                comicConfig.name = name;
+                comicConfig.lastOpenTime = lastOpenTime;
+                comicConfig.lastPosition = lastPosition;
 
-            comicConfig.WriteStream(dataOutputStream);
+                comicConfig.WriteStream(dataOutputStream);
 
-            dataOutputStream.close();
-            fileOutputStream.close();
+                dataOutputStream.close();
+                outputStream.close();
+            }
         }
         catch (Exception e) {
 

@@ -115,8 +115,15 @@ public class SSAF implements ReadWritable {
             }
             //Log.d("LS_TAG", "Append create");
             if(i == pathStack.size() - 1) {
-                //String ext = SFile.GetExtension(pathStack.get(i));
-                cur = cur.createFile("image/png", pathStack.get(i));
+                cur = cur.createFile("model/example", pathStack.get(i));
+                /*String ext = SFile.GetExtension(pathStack.get(i));
+                if(ext == null || ext.compareToIgnoreCase("cfg")==0) {
+                    Log.d("LS_TAG", "cfg or null detected");
+                    cur = cur.createFile("model/example", pathStack.get(i));
+                }
+                else {
+                    cur = cur.createFile("image/png", pathStack.get(i));
+                }*/
             }
             else {
                 cur = cur.createDirectory(pathStack.get(i));
@@ -147,9 +154,9 @@ public class SSAF implements ReadWritable {
     }
     public boolean HavePermission(File file) {
         String sdcardPath = GetSDCardPath(file);
-        Log.d("LS_TAG", "Asking Permission for " + file.toString());
+        //Log.d("LS_TAG", "Asking Permission for " + file.toString());
         if(sdcardPath == null) return false;
-        Log.d("LS_TAG", "SDCardPath = "+ sdcardPath);
+        //Log.d("LS_TAG", "SDCardPath = "+ sdcardPath);
         return IsSDCardAvaibale(sdcardPath);
     }
     public void RequestPermission() {
@@ -180,9 +187,9 @@ public class SSAF implements ReadWritable {
     public void PushPermission(Uri uri) {
         ArrayList<File> sdcardDirs = SFile.GetSDCardDirs();
         sdcardDirs.remove(0);   //  don't care about /sdcard
-        Log.d("LS_TAG", "Uri income : " + uri.toString());
+        //Log.d("LS_TAG", "Uri income : " + uri.toString());
         for(File file : sdcardDirs) {
-            Log.d("LS_TAG", "Compare with " + SDStringToUriString(file.getName()));
+            //Log.d("LS_TAG", "Compare with " + SDStringToUriString(file.getName()));
 
             if(uri.toString().compareToIgnoreCase(SDStringToUriString(file.getName()))==0) {
                 if(!IsSDCardAvaibale(file.toString())) {

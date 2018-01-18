@@ -79,7 +79,7 @@ public class LocalStorage {
             path = new File(file, APP_DIR);
             if(path.exists()) {
                 if(path.isDirectory()) {
-                    Log.d("LS_TAG", "found exist directory at " + path.toString());
+                    //Log.d("LS_TAG", "found exist directory at " + path.toString());
                     basePath = path;
                     pathAvailable = true;
                     return;
@@ -95,19 +95,19 @@ public class LocalStorage {
         if(candidate.size() == 0) {
             //  directory not found and cannot build new directory
             pathAvailable = false;
-            Log.d("LS_TAG", "directory not found and cannot build");
+            //Log.d("LS_TAG", "directory not found and cannot build");
             return;
         }
         pathAvailable = false;
         for(int i=0;i<candidate.size();++i) {
             path = candidate.get(i);
-            Log.d("LS_TAG", "Try to build " + path.toString());
+            //Log.d("LS_TAG", "Try to build " + path.toString());
             if(path.mkdirs()) {
                 basePath = path;
                 pathAvailable = true;
                 return;
             }
-            Log.d("LS_TAG", "but fail");
+            //Log.d("LS_TAG", "but fail");
         }
     }
     /*
@@ -219,7 +219,7 @@ public class LocalStorage {
         ArrayList<File> comicDirs = new ArrayList<>();
         for(File file : containerDirs) {
             if(!file.isDirectory()) continue;
-            Log.d("LS_TAG", "Scanning " + file.toString());
+            //Log.d("LS_TAG", "Scanning " + file.toString());
             InnerScanContainerDirectory(file, comicDirs);
         }
         Collections.sort(comicDirs);

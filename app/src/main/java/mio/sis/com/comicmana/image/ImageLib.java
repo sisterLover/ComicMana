@@ -26,7 +26,7 @@ public class ImageLib {
         try {
             OutputStream outputStream = MainActivity.ssaf.OpenOutputStream(file);
             if(outputStream == null) return false;
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
             outputStream.close();
         }
         catch (Exception e) {

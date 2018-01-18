@@ -20,7 +20,7 @@ import mio.sis.com.comicmana.sdata.ComicSrc;
     cache 會自動將圖片縮放至合理大小
 */
 public class MemoryCache {
-    static final int CACHE_SIZE = 10;
+    static final int CACHE_SIZE = 5;
     class CacheEntry {
         ComicSrc src;
         ComicPosition pos;
@@ -29,7 +29,7 @@ public class MemoryCache {
     }
 
     int entryConunt, front, back;
-    CacheEntry[] entries = new CacheEntry[10];
+    CacheEntry[] entries = new CacheEntry[CACHE_SIZE];
     Semaphore cacheSemaphore = new Semaphore(1);
 
     private void Lock() throws InterruptedException { cacheSemaphore.acquire(); }
@@ -68,7 +68,7 @@ public class MemoryCache {
                 return null;
             }
         }
-        Log.d("LS_TAG", "Scale Success, Caching");
+        //Log.d("LS_TAG", "Scale Success, Caching");
         try {
             Lock();
             if(entryConunt < CACHE_SIZE) {

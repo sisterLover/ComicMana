@@ -59,12 +59,30 @@ public class ComicInfoCache {
     /*
         搜尋函數，但是包含了關鍵字
      */
-    static public void EnumComic(ComicSrc src, int startFrom, int length, String search, NetSiteHelper.EnumCallback callback) {
+    static public void EnumComic(final ComicSrc src,
+                                 final int startFrom,
+                                 final int length,
+                                 final String search,
+                                 final NetSiteHelper.EnumCallback callback) {
         //  本功能只支援 local comic
         if(src.srcType != ComicSrc.SrcType.ST_LOCAL_FILE) {
             callback.ComicDiscover(null);
             return;
         }
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                InnerEnumComic(src, startFrom, length, search, callback);
+            }
+        }.start();
+    }
+    static public void InnerEnumComic(ComicSrc src, int startFrom, int length, String search, NetSiteHelper.EnumCallback callback) {
+        if(src.srcType != ComicSrc.SrcType.ST_LOCAL_FILE) {
+            callback.ComicDiscover(null);
+            return;
+        }
+        localComicSiteHelper.EnumComic(src, startFrom, length, search, callback);
     }
     static public boolean IsComicAvailable(ComicSrc src) {
         switch (src.srcType) {

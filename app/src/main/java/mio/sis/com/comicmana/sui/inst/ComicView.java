@@ -1,16 +1,26 @@
 package mio.sis.com.comicmana.sui.inst;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.constraint.ConstraintLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
+
+import java.io.File;
 
 import mio.sis.com.comicmana.MainActivity;
 import mio.sis.com.comicmana.R;
+import mio.sis.com.comicmana.image.ImageLib;
+import mio.sis.com.comicmana.scache.ImageCache;
 import mio.sis.com.comicmana.sdata.ComicInfo;
+import mio.sis.com.comicmana.sdata.ComicPosition;
+import mio.sis.com.comicmana.sdata.ComicSrc;
 import mio.sis.com.comicmana.sdata.STime;
+import mio.sis.com.comicmana.sfile.LocalStorage;
+import mio.sis.com.comicmana.snet.NetImageHelper;
 import mio.sis.com.comicmana.sui.comp.sszpview.SSZPView;
 import mio.sis.com.comicmana.sui.comp.sszpview.SSZPViewClickListener;
 import mio.sis.com.comicmana.sui.intf.StackableView;
@@ -24,16 +34,20 @@ public class ComicView implements StackableView {
     private ViewStack viewStack;
     private ConstraintLayout root;
     private LinearLayout sszp_parent, tooltipTop, tooltipBottom;
+    private Button configButton, saveButton;
+    private boolean tooltipActive, isSafe;  //  當前 tooltip 是否顯示、此 ComicView 是否為安全模式視窗
     private SSZPView sszpView;
     private ComicInfo comicInfo;
 
     /*
         載入 comicInfo 的漫畫，並從 lastPosition 開始
      */
-    public ComicView(ViewStack viewStack, ComicInfo comicInfo) {
+    public ComicView(ViewStack viewStack, ComicInfo comicInfo, boolean isSafe) {
         this.viewStack = viewStack;
         this.comicInfo = comicInfo;
+        this.isSafe = isSafe;
 
+        tooltipActive = false;
         MainActivity.historyRecord.PushRecord(comicInfo.src);
     }
 
@@ -57,6 +71,21 @@ public class ComicView implements StackableView {
         tooltipTop = root.findViewById(R.id.comic_view_tooltip_top);
         tooltipBottom = root.findViewById(R.id.comic_view_tooltip_bottom);
 
+        configButton = root.findViewById(R.id.comic_view_config_button);
+        configButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                OnConfigClick();
+            }
+        });
+        saveButton = root.findViewById(R.id.comic_view_save_button);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                OnSaveClick();
+            }
+        });
+
         return root;
     }
 
@@ -75,9 +104,11 @@ public class ComicView implements StackableView {
         sszp_parent.removeAllViews();
         sszpView = null;
         sszp_parent = null;
-        tooltipTop.removeAllViews();
         tooltipTop = null;
-        tooltipBottom.removeAllViews();
+
+        configButton = saveButton = null;
+        tooltipActive = false;
+        tooltipBottom.setVisibility(View.GONE);
         tooltipBottom = null;
         root = null;
     }
@@ -87,8 +118,69 @@ public class ComicView implements StackableView {
         return true;
     }
 
-    private void OnSSZPClick(int x, int y, int width, int height) {
+    private void OnConfigClick() {
+        viewStack.Push(new ConfigView(viewStack));
+    }
+    private void OnSaveClick() {
+        ComicPosition position = new ComicPosition();
+        position.Copy(sszpView.GetCurrentPosition());
+        ImageCache.GetRawComicPage(comicInfo.src, position, new NetImageHelper.ComicPageCallback() {
+            @Override
+            public void PageRecieve(Bitmap bitmap) {
+                if(bitmap == null) return;
+                File downloadDir = LocalStorage.GetDownloadDir();
+                if(downloadDir == null) return;
+                STime time = new STime();
+                time.GetCurrentTime();
+                ImageLib.SaveFile(
+                        new File(
+                                downloadDir,
+                                "PageSave"+time.year+"_"+time.month+"_"+time.day+
+                                        "_"+time.hour+"_"+time.minute+"_"+time.second+".jpg"),
+                        bitmap);
+            }
 
+            @Override
+            public void UpdateProgress(int percent) {
+                return;
+            }
+        });
+        ToggleToolTip();
+    }
+
+    private void OnSSZPClick(int x, int y, int width, int height) {
+        if(!isSafe && y<height/3) {
+            //  safe mode
+            File safeModeDir = MainActivity.manaConfig.safeModeComicDir;
+            if(safeModeDir != null) {
+                int type = LocalStorage.GetComicDirectoryType(safeModeDir.listFiles());
+                if (type == LocalStorage.COMIC_DIR_SINGLE || type == LocalStorage.COMIC_DIR_MULTIPLE) {
+                    ComicInfo comicInfo = new ComicInfo();
+                    comicInfo.src.srcType = ComicSrc.SrcType.ST_LOCAL_FILE;
+                    comicInfo.src.path = safeModeDir.toString();
+                    LocalStorage.LoadComicInfo(comicInfo);
+                    if(comicInfo.lastPosition.chapter==ComicPosition.CHAPTER_NOT_READ_YET) {
+                        comicInfo.lastPosition.chapter = 1;
+                        comicInfo.lastPosition.page = 1;
+                    }
+                    viewStack.Push(new ComicView(viewStack, comicInfo, true));
+                    return;
+                }
+            }
+        }
+        //  安全模式沒有啟動或是按在其他地方就切換 tooltip
+        //  tooltip
+        ToggleToolTip();
+    }
+    private void ToggleToolTip() {
+        if(tooltipActive) {
+            tooltipBottom.setVisibility(View.GONE);
+            tooltipActive = false;
+        }
+        else {
+            tooltipBottom.setVisibility(View.VISIBLE);
+            tooltipActive = true;
+        }
     }
 
     private class SSZPClickListener implements SSZPViewClickListener {

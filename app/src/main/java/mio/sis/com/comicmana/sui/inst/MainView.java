@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -37,7 +39,10 @@ public class MainView implements StackableView {
     private LinearLayout root, grid_parent, search_bar_parent;
     private int currentState;
     private Button historyButton, localButton, netButton;
+    private ImageView searchButton, configButton;
+    private EditText searchEdit;
     private Pager pager;
+    private Grid grid;
 
     public MainView(ViewStack viewStack) {
         this.viewStack = viewStack;
@@ -82,6 +87,23 @@ public class MainView implements StackableView {
                     }
                 }
         );
+        searchButton = root.findViewById(R.id.main_view_search_button);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                OnSearchClick();
+            }
+        });
+        configButton = root.findViewById(R.id.main_view_config_button);
+        configButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                OnConfigClick();
+            }
+        });
+
+        searchEdit = root.findViewById(R.id.main_view_search_edit);
+
         InflateCurrentView();
 
         return root;
@@ -96,10 +118,12 @@ public class MainView implements StackableView {
     public void FreeView() {
         search_bar_parent = null;
 
-        grid_parent.removeAllViews();
+        ClearCurrentView();
         grid_parent = null;
 
         historyButton = localButton = netButton = null;
+        searchButton = configButton = null;
+        searchEdit = null;
         root = null;
     }
 
@@ -110,6 +134,8 @@ public class MainView implements StackableView {
 
     private void ClearCurrentView() {
         grid_parent.removeAllViews();
+        pager = null;
+        grid = null;
     }
 
     private void InflateCurrentView() {
@@ -182,7 +208,7 @@ public class MainView implements StackableView {
                 HighLightButton(netButton);
                 break;
         }
-        Grid grid = new Grid(comicSrc);
+        grid = new Grid(comicSrc);
         grid.SetActionCallback(new AbstractComicGrid.ActionCallback() {
             @Override
             public void OnComicClick(ComicInfo comicInfo) {
@@ -223,6 +249,13 @@ public class MainView implements StackableView {
         ClearCurrentView();
         currentState = STATE_NET;
         InflateCurrentView();
+    }
+    private void OnSearchClick() {
+        searchEdit.clearFocus();
+        grid.SetSearch(searchEdit.getText().toString());
+    }
+    private void OnConfigClick() {
+        viewStack.Push(new ConfigView(viewStack));
     }
     private void MV_OnComicClick(ComicInfo comicInfo) {
         viewStack.Push(new ChapterSelectView(viewStack, comicInfo));

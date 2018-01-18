@@ -21,6 +21,7 @@ import java.util.concurrent.Semaphore;
 import mio.sis.com.comicmana.scache.ComicInfoCache;
 import mio.sis.com.comicmana.sdata.HistoryRecord;
 import mio.sis.com.comicmana.sdata.ManaConfig;
+import mio.sis.com.comicmana.sfile.LocalStorage;
 import mio.sis.com.comicmana.sfile.SFile;
 import mio.sis.com.comicmana.sfile.saf.SSAF;
 import mio.sis.com.comicmana.snet.inst.LocalComicSiteHelper;
@@ -107,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == SDCARD_REQUEST) {
             Uri uri = data.getData();
-            Toast.makeText(this, uri.toString(), Toast.LENGTH_SHORT).show();
             Log.d("LS_TAG", uri.toString());
             ssaf.PushPermission(uri);
 
@@ -129,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void LoadEveryThing() {
         Log.d("LS_TAG", "Reading Everything");
+        LocalStorage.UpdatePath();
         manaConfig.LoadConfig();
         historyRecord.LoadRecord();
         ssaf.LoadSSAF();

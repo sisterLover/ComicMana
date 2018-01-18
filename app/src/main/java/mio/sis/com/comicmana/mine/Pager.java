@@ -3,6 +3,8 @@ package mio.sis.com.comicmana.mine;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -91,10 +93,15 @@ public class Pager implements AbstractWelcomeView {
     }
     public void UpdatePager(final ComicInfo[] comicInfos)
     {
-        if(comicInfos.length>4||comicInfos.length<0)
-            pages=0;
-        else
-            pages=comicInfos.length;
+        if(comicInfos==null||comicInfos.length>MAX_PAGES||comicInfos.length<0) {
+            pages = 0;
+
+        }
+        else {
+            pages = comicInfos.length;
+        }
+
+
 
         for(int i=1;i<=MAX_PAGES;i++)
         {
@@ -112,33 +119,43 @@ public class Pager implements AbstractWelcomeView {
             });
         }
 
-        PagerAdapter pagerAdapter=new PagerAdapter(comicInfos,context);
-        viewPager.setAdapter(pagerAdapter);
+        if(pages!=0) {
+            PagerAdapter pagerAdapter = new PagerAdapter(comicInfos, context);
+            pagerAdapter.SetAction(actionCallback,true);
+            viewPager.setAdapter(pagerAdapter);
+            viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                }
 
-            }
+                @Override
+                public void onPageSelected(int position) {
+                    //Toast.makeText(context,""+position,Toast.LENGTH_SHORT).show();
+                    BtnStateChange(position);
+                }
 
-            @Override
-            public void onPageSelected(int position) {
-                //Toast.makeText(context,""+position,Toast.LENGTH_SHORT).show();
-                BtnStateChange(position);
-            }
+                @Override
+                public void onPageScrollStateChanged(int state) {
 
-            @Override
-            public void onPageScrollStateChanged(int state) {
+                }
+            });
+            viewPager.setCurrentItem(0);
 
-            }
-        });
-        viewPager.setCurrentItem(0);
-        viewPager.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                actionCallback.OnComicClick(comicInfos[viewPager.getCurrentItem()]);
-            }
-        });
+        }
+        else
+        {
+            ComicInfo[] temp=new ComicInfo[1];
+            temp[0]=new ComicInfo();
+            temp[0].thumbnail= BitmapFactory.decodeResource(context.getResources(),R.drawable.open);
+            PagerAdapter pagerAdapter=new PagerAdapter(temp,context);
+            viewPager.setAdapter(pagerAdapter);
+
+
+        }
+
+
+
     }
 
     public void BtnStateChange(final int selected)

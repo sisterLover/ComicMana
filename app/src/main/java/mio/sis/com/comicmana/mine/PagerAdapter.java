@@ -6,9 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import mio.sis.com.comicmana.R;
 import mio.sis.com.comicmana.sdata.ComicInfo;
+import mio.sis.com.comicmana.sui.intf.AbstractWelcomeView;
 
 /**
  * Created by Nako on 2018/1/18.
@@ -18,9 +20,13 @@ public class PagerAdapter extends android.support.v4.view.PagerAdapter {
     private Context context;
     private ComicInfo[] comicInfos;
     private LayoutInflater layoutInflater;
+    private AbstractWelcomeView.ActionCallback actionCallback;
+    private boolean flag;
+
     public PagerAdapter(ComicInfo[] comicInfos,Context context) {
         this.context=context;
         this.comicInfos=comicInfos;
+        flag=false;
     }
 
     @Override
@@ -41,7 +47,7 @@ public class PagerAdapter extends android.support.v4.view.PagerAdapter {
     }
 
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
+    public Object instantiateItem(ViewGroup container, final int position) {
         layoutInflater = (LayoutInflater)
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -51,6 +57,14 @@ public class PagerAdapter extends android.support.v4.view.PagerAdapter {
         if(comicInfos[position].thumbnail != null) {
             imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             imageView.setImageBitmap(comicInfos[position].thumbnail);
+        }
+        if(actionCallback!=null&&flag) {
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    actionCallback.OnComicClick(comicInfos[position]);
+                }
+            });
         }
 
         (container).addView(itemView);
@@ -63,5 +77,14 @@ public class PagerAdapter extends android.support.v4.view.PagerAdapter {
         container.removeView((View) object);
     }
 
+    public void SetAction(AbstractWelcomeView.ActionCallback actionCallback,boolean flag)
+    {
+        this.actionCallback=actionCallback;
+        this.flag=flag;
+    }
+    public void SetFlag(boolean flag)
+    {
+        this.flag=flag;
+    }
 
 }

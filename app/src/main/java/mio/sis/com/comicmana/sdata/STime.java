@@ -24,11 +24,11 @@ public class STime implements ReadWritable {
         hour = minute = second = 0;
     }
     public GregorianCalendar GetCalendar() {
-        return new GregorianCalendar(year, month, day, hour, minute, second);
+        return new GregorianCalendar(year, month - 1, day, hour, minute, second);
     }
     public void SetFromCalendar(GregorianCalendar calendar) {
         year = calendar.get(GregorianCalendar.YEAR);
-        month = calendar.get(GregorianCalendar.MONTH);
+        month = calendar.get(GregorianCalendar.MONTH) + 1;
         day = calendar.get(GregorianCalendar.DAY_OF_MONTH);
         hour = calendar.get(GregorianCalendar.HOUR_OF_DAY);
         minute = calendar.get(GregorianCalendar.MINUTE);

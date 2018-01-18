@@ -114,13 +114,6 @@ public class ImageCache {
             InnerGetComicPage(page, src, position);
         }
     }
-    /*
-        當某頁漫畫進入 SIP_READY_OUT 時，會將 bitmap 交由 cache 保管
-        固定 bitmap 存入後會將最先存入之 bitmap 從 cache 刪除
-     */
-    static public void CacheBitmap(ComicSrc src, ComicPosition position, Bitmap bitmap) {
-
-    }
 
     static class ImageCacheImageHelper implements NetImageHelper.ComicPageCallback {
         private DefaultImageHelper defaultImageHelper;

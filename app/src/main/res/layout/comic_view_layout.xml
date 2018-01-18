@@ -17,6 +17,18 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"></LinearLayout>
 
+
+    <mio.sis.com.comicmana.sui.comp.HintText
+        android:id="@+id/hint_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorHintBackground"
+        android:textColor="@color/colorHintText"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:textSize="22sp"
+        android:text="hint" />
+
     <LinearLayout
         android:id="@+id/comic_view_tooltip_top"
         android:layout_width="match_parent"
@@ -35,16 +47,22 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:visibility="gone"></LinearLayout>
-
-    <mio.sis.com.comicmana.sui.comp.HintText
-        android:id="@+id/hint_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/colorHintBackground"
-        android:textColor="@color/colorHintText"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:textSize="22sp"
-        android:text="hint" />
+        android:visibility="gone">
+        <Button
+            android:id="@+id/comic_view_config_button"
+            android:layout_width="0pt"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/mana_ui_base_border_background"
+            android:textColor="@color/manaUIBaseTextColor"
+            android:text="設定"/>
+        <Button
+            android:id="@+id/comic_view_save_button"
+            android:layout_width="0pt"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/mana_ui_base_border_background"
+            android:textColor="@color/manaUIBaseTextColor"
+            android:text="儲存本頁圖片"/>
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>
