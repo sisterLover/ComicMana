@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -193,6 +194,7 @@ public class MainView implements StackableView {
                 textView.setText("本地漫畫");
                 comicSrc.srcType = ComicSrc.SrcType.ST_LOCAL_FILE;
 
+                searchEdit.setText("");
                 search_bar_parent.setVisibility(View.VISIBLE);
                 ResetButton(historyButton);
                 HighLightButton(localButton);
@@ -251,7 +253,10 @@ public class MainView implements StackableView {
         InflateCurrentView();
     }
     private void OnSearchClick() {
-        searchEdit.clearFocus();
+        //searchEdit.clearFocus();
+        InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(
+                searchEdit.getWindowToken(), 0);
         grid.SetSearch(searchEdit.getText().toString());
     }
     private void OnConfigClick() {

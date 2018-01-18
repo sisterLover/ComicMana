@@ -24,6 +24,7 @@ import mio.sis.com.comicmana.sdata.ManaConfig;
 import mio.sis.com.comicmana.sfile.LocalStorage;
 import mio.sis.com.comicmana.sfile.SFile;
 import mio.sis.com.comicmana.sfile.saf.SSAF;
+import mio.sis.com.comicmana.snet.SNet;
 import mio.sis.com.comicmana.snet.inst.LocalComicSiteHelper;
 import mio.sis.com.comicmana.sui.comp.PathSelector;
 import mio.sis.com.comicmana.sui.comp.PathSelectorListener;
@@ -67,6 +68,9 @@ public class MainActivity extends AppCompatActivity {
         else {
             SFile.RequestPermission(this);
         }
+        if(!SNet.ChechPermission(this)) {
+            SNet.RequestPermission(this);
+        }
         /*MainActivity.MAIN_ACTIVITY.startActivityForResult(
                 new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE),
                 MainActivity.SDCARD_REQUEST);*/
@@ -76,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         viewStack = new ViewStack(this, root);
         //viewStack.Push(new ChapterSelectView(viewStack, ComicInfo.GetTestComicInfo()));
         viewStack.Push(new MainView(viewStack));
-        viewStack.Push(new ConfigView(viewStack));
+        //viewStack.Push(new ConfigView(viewStack));
     }
 
     @Override
@@ -96,12 +100,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode != SFile.REQUEST_CODE) return;
-        if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            LoadEveryThing();
+        if(requestCode == SFile.REQUEST_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                LoadEveryThing();
+            } else {
+                Toast.makeText(this, "拒絕權限將會導致SD功能無效", Toast.LENGTH_SHORT).show();
+            }
         }
-        else {
-            Toast.makeText(this, "拒絕權限將會導致SD功能無效", Toast.LENGTH_SHORT).show();
+        if(requestCode == SNet.REQUEST_CODE) {
+            if(grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "拒絕權限將會導致網路功能無效", Toast.LENGTH_SHORT).show();
+            }
         }
     }
     @Override

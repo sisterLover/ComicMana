@@ -1,5 +1,6 @@
 package mio.sis.com.comicmana.scache;
 
+import mio.sis.com.comicmana.mine.Web_wnacg_ComicInfo;
 import mio.sis.com.comicmana.sdata.ComicInfo;
 import mio.sis.com.comicmana.sdata.ComicSrc;
 import mio.sis.com.comicmana.snet.NetSiteHelper;
@@ -13,6 +14,7 @@ import mio.sis.com.comicmana.snet.inst.LocalComicSiteHelper;
 public class ComicInfoCache {
     static private LocalComicSiteHelper localComicSiteHelper = new LocalComicSiteHelper();
     static private HistorySiteHelper historySiteHelper = new HistorySiteHelper();
+    static private Web_wnacg_ComicInfo wnacgSitHelper = new Web_wnacg_ComicInfo();
     /*
         ComicGrid 應該呼叫此函數來取得 comicInfo
      */
@@ -39,8 +41,8 @@ public class ComicInfoCache {
                 localComicSiteHelper.EnumComic(src, startFrom, length, callback);
                 break;
             case ComicSrc.SrcType.ST_NET_WNACG:
-                //callback.ComicDiscover(null);
-                //break;
+                wnacgSitHelper.EnumComic(src, startFrom, length, callback);
+                break;
             case ComicSrc.SrcType.ST_TEST_SRC:
                 /*
                     debug use
@@ -91,7 +93,7 @@ public class ComicInfoCache {
             case ComicSrc.SrcType.ST_LOCAL_FILE:
                 return localComicSiteHelper.IsComicAvailable(src);
             case ComicSrc.SrcType.ST_NET_WNACG:
-                return false;
+                return wnacgSitHelper.IsComicAvailable(src);
             case ComicSrc.SrcType.ST_TEST_SRC:
                 return true;
             default:
@@ -105,7 +107,7 @@ public class ComicInfoCache {
             case ComicSrc.SrcType.ST_LOCAL_FILE:
                 return localComicSiteHelper.RequestComicInfo(src);
             case ComicSrc.SrcType.ST_NET_WNACG:
-                return null;
+                return wnacgSitHelper.RequestComicInfo(src);
             case ComicSrc.SrcType.ST_TEST_SRC:
                 return ComicInfo.GetTestComicInfo();
             default:

@@ -32,11 +32,13 @@ public class Grid implements AbstractComicGrid{
     ComicSrc src;
     int pages;
     ActionCallback actionCallback;
+    String searchString;
 
     public Grid(ComicSrc src)
     {
         this.src=src;
         pages=1;
+        searchString = "";
     }
 
 
@@ -66,7 +68,13 @@ public class Grid implements AbstractComicGrid{
 
 
     public void SetGrid() {
-        ComicInfoCache.EnumComic(this.src, this.pages, 12, new GridCallBack(this));
+        if(searchString.length() !=0) {
+            if(src.srcType == ComicSrc.SrcType.ST_LOCAL_FILE) {
+                ComicInfoCache.EnumComic(this.src, (this.pages-1)*12, 12, searchString, new GridCallBack(this));
+                return;
+            }
+        }
+        ComicInfoCache.EnumComic(this.src, (this.pages-1)*12, 12, new GridCallBack(this));
     }
 
     public void PostUpdateGridView(final ComicInfo[] comicInfos)
@@ -140,7 +148,7 @@ public class Grid implements AbstractComicGrid{
         mainLayout = inflater.inflate(R.layout.grid_view, null);
         gestureDetector = new GestureDetector(context, new Mlistener());
         this.context = context;
-        ComicInfoCache.EnumComic(this.src, (this.pages - 1) * 12, 12, new GridCallBack(this));
+        SetGrid();
         return mainLayout;
     }
 
@@ -163,6 +171,8 @@ public class Grid implements AbstractComicGrid{
     public void SetSearch(String string) {
         if(src.srcType != ComicSrc.SrcType.ST_LOCAL_FILE) return;
         Log.d("LS_TAG", "Searching " + string);
-        ComicInfoCache.EnumComic(src, 0, 12, string, new GridCallBack(this));
+        searchString = string;
+        pages = 1;
+        SetGrid();
     }
 }

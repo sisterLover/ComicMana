@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 
 import java.util.concurrent.Semaphore;
 
+import mio.sis.com.comicmana.mine.Web_wnacg_ComicInner;
 import mio.sis.com.comicmana.sdata.ComicPosition;
 import mio.sis.com.comicmana.sdata.ComicSrc;
 import mio.sis.com.comicmana.snet.inst.LocalComicImageHelper;
@@ -21,6 +22,7 @@ public class ImageCache {
      */
     static TestComicImageHelper testComicImageHelper = new TestComicImageHelper();
     static LocalComicImageHelper localComicImageHelper = new LocalComicImageHelper();
+    static Web_wnacg_ComicInner wnacgComicImageHelper = new Web_wnacg_ComicInner();
 
     static Semaphore semaphore = new Semaphore(1);
     static void Lock() throws InterruptedException { semaphore.acquire(); }
@@ -62,7 +64,7 @@ public class ImageCache {
                 localComicImageHelper.GetComicPage(src, position, callback);
                 break;
             case ComicSrc.SrcType.ST_NET_WNACG:
-                testComicImageHelper.GetComicPage(src, position, callback);
+                wnacgComicImageHelper.GetComicPage(src, position, callback);
                 break;
             default:
                 callback.PageRecieve(null);
@@ -93,7 +95,7 @@ public class ImageCache {
                 );
                 break;
             case ComicSrc.SrcType.ST_NET_WNACG:
-                testComicImageHelper.GetComicPage(src, position, new DefaultImageHelper(page));
+                wnacgComicImageHelper.GetComicPage(src, position, new DefaultImageHelper(page));
                 break;
             default:
                 page.PostError();
